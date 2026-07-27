@@ -2583,12 +2583,12 @@ input[type="range"]::-webkit-slider-thumb {
 
 	<div id="transition-vignette"></div>
 
-	<div id="onscreen-log">
+	<div id="onscreen-log" class="log-collapsed">
 		<div id="onscreen-log-header">
 			<span>SYSTEM LOG</span>
 			<span id="onscreen-log-actions">
 				<button id="onscreen-log-clear" type="button">CLEAR</button>
-				<button id="onscreen-log-toggle" type="button">HIDE</button>
+				<button id="onscreen-log-toggle" type="button">SHOW</button>
 			</span>
 		</div>
 		<div id="onscreen-log-body"></div>
@@ -2600,6 +2600,9 @@ input[type="range"]::-webkit-slider-thumb {
 	// one diagnostic that can report even a total module-loading failure.
 	(function () {
 		var logBody = document.getElementById('onscreen-log-body');
+		var logPanel = document.getElementById('onscreen-log');
+		var toggleBtn = document.getElementById('onscreen-log-toggle');
+
 		function rawLog(level, text) {
 			if (!logBody) return;
 			var line = document.createElement('div');
@@ -2608,6 +2611,12 @@ input[type="range"]::-webkit-slider-thumb {
 			line.innerHTML = '<span class="log-line-time">' + time + '</span>' + String(text).replace(/</g, '&lt;');
 			logBody.appendChild(line);
 			logBody.scrollTop = logBody.scrollHeight;
+			// Only auto-expand for errors - the panel stays collapsed to a thin
+			// header bar otherwise, so it doesn't block taps on the map/HUD below it.
+			if (level === 'error' && logPanel) {
+				logPanel.classList.remove('log-collapsed');
+				if (toggleBtn) toggleBtn.textContent = 'HIDE';
+			}
 		}
 
 		rawLog('info', 'Bootstrap OK - page parsed. protocol=' + location.protocol + ' UA=' + navigator.userAgent);
@@ -2623,8 +2632,6 @@ input[type="range"]::-webkit-slider-thumb {
 		}, 5000);
 
 		var clearBtn = document.getElementById('onscreen-log-clear');
-		var toggleBtn = document.getElementById('onscreen-log-toggle');
-		var logPanel = document.getElementById('onscreen-log');
 		if (clearBtn) clearBtn.addEventListener('click', function () { if (logBody) logBody.innerHTML = ''; });
 		if (toggleBtn && logPanel) {
 			toggleBtn.addEventListener('click', function () {
@@ -2632,6 +2639,8 @@ input[type="range"]::-webkit-slider-thumb {
 				toggleBtn.textContent = collapsed ? 'SHOW' : 'HIDE';
 			});
 		}
+
+		window.__wfsRawLog = rawLog;
 	})();
 	</script>
 
@@ -2645,6 +2654,15 @@ input[type="range"]::-webkit-slider-thumb {
 import * as THREE from 'https://esm.sh/three@0.182.0';
 import { GLTFLoader } from 'https://esm.sh/three@0.182.0/examples/jsm/loaders/GLTFLoader.js';
 import * as Cesium from 'https://cdn.jsdelivr.net/npm/cesium@1.137.0/Build/Cesium/index.js';
+
+// ==== PASTE YOUR CESIUM ION TOKEN HERE ====
+// Get a free one at https://ion.cesium.com (Access Tokens tab). Without it,
+// world terrain will fail (401 INVALID_TOKEN) and the game falls back to a
+// flat ellipsoid - it still runs, it just won't have real elevation data.
+const CESIUM_ION_TOKEN = 'PASTE_YOUR_TOKEN_HERE';
+if (CESIUM_ION_TOKEN && CESIUM_ION_TOKEN !== 'PASTE_YOUR_TOKEN_HERE') {
+	Cesium.Ion.defaultAccessToken = CESIUM_ION_TOKEN;
+}
 
 // ==== Global safety net + on-screen log ====
 // If ANYTHING throws anywhere during setup (missing assets, a blocked CDN,
@@ -2677,6 +2695,11 @@ import * as Cesium from 'https://cdn.jsdelivr.net/npm/cesium@1.137.0/Build/Cesiu
 		line.innerHTML = '<span class="log-line-time">' + time + '</span>' + text.replace(/</g, '&lt;');
 		logBody.appendChild(line);
 		logBody.scrollTop = logBody.scrollHeight;
+		if (level === 'error' && logPanel) {
+			logPanel.classList.remove('log-collapsed');
+			const toggleBtn = document.getElementById('onscreen-log-toggle');
+			if (toggleBtn) toggleBtn.textContent = 'HIDE';
+		}
 	}
 
 	const origLog = console.log.bind(console);
