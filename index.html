@@ -2660,7 +2660,8 @@ import * as Cesium from 'https://cdn.jsdelivr.net/npm/cesium@1.137.0/Build/Cesiu
 // world terrain will fail (401 INVALID_TOKEN) and the game falls back to a
 // flat ellipsoid - it still runs, it just won't have real elevation data.
 const CESIUM_ION_TOKEN = 'PASTE_YOUR_TOKEN_HERE';
-if (CESIUM_ION_TOKEN && CESIUM_ION_TOKEN !== 'PASTE_YOUR_TOKEN_HERE') {
+const HAS_ION_TOKEN = !!(CESIUM_ION_TOKEN && CESIUM_ION_TOKEN !== 'PASTE_YOUR_TOKEN_HERE');
+if (HAS_ION_TOKEN) {
 	Cesium.Ion.defaultAccessToken = CESIUM_ION_TOKEN;
 }
 
@@ -3001,6 +3002,231 @@ const particles = {
 				p.matrix.scale(p.scale);
 			}
 			p.updateMatrixWorld(true);
+		}
+	}
+};
+
+// ==================== cloudField.js (new - procedural clouds, since terrain/imagery may be missing) ====================
+const cloudField = {
+	scene: null,
+	viewer: null,
+	list: [],
+	_texture: null,
+	_scratchMatrix: new Cesium.Matrix4(),
+	_scratchCameraMatrix: new Cesium.Matrix4(),
+	_scratchThreeMatrix: new THREE.Matrix4(),
+	_desiredCount: 26,
+	_spawnRadius: 26000,
+	_removeRadius: 34000,
+
+	init(scene, viewer) {
+		this.scene = scene;
+		this.viewer = viewer;
+		this._texture = this._makeCloudTexture();
+	},
+
+	_makeCloudTexture() {
+		const size = 128;
+		const canvas = document.createElement('canvas');
+		canvas.width = canvas.height = size;
+		const ctx = canvas.getContext('2d');
+		const cx = size / 2, cy = size / 2;
+		const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, cx);
+		grad.addColorStop(0, 'rgba(255,255,255,0.95)');
+		grad.addColorStop(0.45, 'rgba(255,255,255,0.55)');
+		grad.addColorStop(1, 'rgba(255,255,255,0)');
+		ctx.fillStyle = grad;
+		ctx.fillRect(0, 0, size, size);
+		const tex = new THREE.CanvasTexture(canvas);
+		return tex;
+	},
+
+	_spawnCloud(lon, lat, alt) {
+		const group = new THREE.Group();
+		const puffCount = 5 + Math.floor(Math.random() * 5);
+		for (let i = 0; i < puffCount; i++) {
+			const mat = new THREE.SpriteMaterial({
+				map: this._texture,
+				transparent: true,
+				opacity: 0.5 + Math.random() * 0.25,
+				depthWrite: false
+			});
+			const sprite = new THREE.Sprite(mat);
+			const scale = 350 + Math.random() * 550;
+			sprite.scale.set(scale, scale * (0.5 + Math.random() * 0.25), 1);
+			sprite.position.set(
+				(Math.random() - 0.5) * 650,
+				(Math.random() - 0.5) * 120,
+				(Math.random() - 0.5) * 650
+			);
+			group.add(sprite);
+		}
+		group.lon = lon;
+		group.lat = lat;
+		group.alt = alt;
+		group.driftSpeed = 0.4 + Math.random() * 0.8;
+		group.matrixAutoUpdate = false;
+		this.scene.add(group);
+		this.list.push(group);
+	},
+
+	_ensurePopulated(playerLon, playerLat) {
+		let guard = 0;
+		while (this.list.length < this._desiredCount && guard < this._desiredCount) {
+			guard++;
+			const angle = Math.random() * Math.PI * 2;
+			const dist = 2000 + Math.random() * this._spawnRadius;
+			const lonOffset = (dist * Math.cos(angle)) / (111320 * Math.cos(Cesium.Math.toRadians(playerLat)));
+			const latOffset = (dist * Math.sin(angle)) / 111320;
+			const alt = 700 + Math.random() * 2200;
+			this._spawnCloud(playerLon + lonOffset, playerLat + latOffset, alt);
+		}
+	},
+
+	update(dt, playerLon, playerLat) {
+		if (!this.viewer || typeof playerLon !== 'number' || typeof playerLat !== 'number') return;
+
+		this._ensurePopulated(playerLon, playerLat);
+
+		const viewMatrix = this.viewer.camera.viewMatrix;
+		for (let i = this.list.length - 1; i >= 0; i--) {
+			const c = this.list[i];
+
+			c.lon += (c.driftSpeed * dt) / (111320 * Math.cos(Cesium.Math.toRadians(c.lat)));
+
+			const dLon = (c.lon - playerLon) * 111320 * Math.cos(Cesium.Math.toRadians(playerLat));
+			const dLat = (c.lat - playerLat) * 111320;
+			const distSq = dLon * dLon + dLat * dLat;
+			if (distSq > this._removeRadius * this._removeRadius) {
+				this.scene.remove(c);
+				this.list.splice(i, 1);
+				continue;
+			}
+
+			const pos = Cesium.Cartesian3.fromDegrees(c.lon, c.lat, c.alt, undefined, new Cesium.Cartesian3());
+			const modelMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(pos, undefined, this._scratchMatrix);
+			const cameraSpaceMatrix = Cesium.Matrix4.multiply(viewMatrix, modelMatrix, this._scratchCameraMatrix);
+			for (let j = 0; j < 16; j++) this._scratchThreeMatrix.elements[j] = cameraSpaceMatrix[j];
+			c.matrix.copy(this._scratchThreeMatrix);
+			c.updateMatrixWorld(true);
+		}
+	},
+
+	clear() {
+		for (const c of this.list) this.scene.remove(c);
+		this.list = [];
+	}
+};
+
+// ==================== airport.js (new - simple runway/buildings placed at the spawn point) ====================
+const airport = {
+	scene: null,
+	viewer: null,
+	group: null,
+	lon: 0,
+	lat: 0,
+	alt: 0,
+	_scratchMatrix: new Cesium.Matrix4(),
+	_scratchCameraMatrix: new Cesium.Matrix4(),
+	_scratchThreeMatrix: new THREE.Matrix4(),
+
+	init(scene, viewer) {
+		this.scene = scene;
+		this.viewer = viewer;
+	},
+
+	_makeRunwayTexture() {
+		const w = 128, h = 512;
+		const canvas = document.createElement('canvas');
+		canvas.width = w; canvas.height = h;
+		const ctx = canvas.getContext('2d');
+		ctx.fillStyle = '#2b2b2e';
+		ctx.fillRect(0, 0, w, h);
+		ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+		ctx.lineWidth = 6;
+		ctx.setLineDash([28, 22]);
+		ctx.beginPath();
+		ctx.moveTo(w / 2, 0);
+		ctx.lineTo(w / 2, h);
+		ctx.stroke();
+		ctx.setLineDash([]);
+		ctx.fillStyle = 'rgba(255,255,255,0.8)';
+		for (let side = -1; side <= 1; side += 2) {
+			for (let y = 20; y < h - 20; y += 46) {
+				ctx.fillRect(w / 2 + side * 26 - 5, y, 10, 26);
+			}
+		}
+		const tex = new THREE.CanvasTexture(canvas);
+		tex.wrapS = THREE.ClampToEdgeWrapping;
+		tex.wrapT = THREE.RepeatWrapping;
+		tex.repeat.set(1, 4);
+		return tex;
+	},
+
+	spawnAt(lon, lat, groundAlt, headingDeg) {
+		if (!this.scene) return;
+		if (this.group) {
+			this.scene.remove(this.group);
+			this.group = null;
+		}
+
+		this.lon = lon;
+		this.lat = lat;
+		this.alt = groundAlt || 0;
+
+		const group = new THREE.Group();
+
+		const runwayLength = 1600;
+		const runwayWidth = 45;
+		const runwayGeom = new THREE.PlaneGeometry(runwayWidth, runwayLength);
+		const runwayTex = this._makeRunwayTexture();
+		const runwayMat = new THREE.MeshBasicMaterial({ map: runwayTex, side: THREE.DoubleSide });
+		const runway = new THREE.Mesh(runwayGeom, runwayMat);
+		runway.rotation.x = -Math.PI / 2;
+		runway.position.y = 0.5;
+		group.add(runway);
+
+		const grassGeom = new THREE.PlaneGeometry(runwayLength * 1.3, runwayLength * 1.3);
+		const grassMat = new THREE.MeshBasicMaterial({ color: 0x3c6b35, side: THREE.DoubleSide });
+		const grass = new THREE.Mesh(grassGeom, grassMat);
+		grass.rotation.x = -Math.PI / 2;
+		grass.position.y = 0;
+		group.add(grass);
+
+		const buildingMat = new THREE.MeshStandardMaterial({ color: 0xcccccc });
+		const towerMat = new THREE.MeshStandardMaterial({ color: 0xdddddd });
+
+		const hangar = new THREE.Mesh(new THREE.BoxGeometry(60, 25, 90), buildingMat);
+		hangar.position.set(-runwayWidth / 2 - 60, 12, -runwayLength / 2 + 120);
+		group.add(hangar);
+
+		const tower = new THREE.Mesh(new THREE.BoxGeometry(20, 45, 20), towerMat);
+		tower.position.set(-runwayWidth / 2 - 60, 22, -runwayLength / 2 + 30);
+		group.add(tower);
+
+		const headingRad = Cesium.Math.toRadians(headingDeg || 0);
+		group.rotation.y = headingRad;
+
+		group.matrixAutoUpdate = false;
+		this.scene.add(group);
+		this.group = group;
+	},
+
+	update() {
+		if (!this.group || !this.viewer) return;
+		const viewMatrix = this.viewer.camera.viewMatrix;
+		const pos = Cesium.Cartesian3.fromDegrees(this.lon, this.lat, this.alt, undefined, new Cesium.Cartesian3());
+		const modelMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(pos, undefined, this._scratchMatrix);
+		const cameraSpaceMatrix = Cesium.Matrix4.multiply(viewMatrix, modelMatrix, this._scratchCameraMatrix);
+		for (let j = 0; j < 16; j++) this._scratchThreeMatrix.elements[j] = cameraSpaceMatrix[j];
+		this.group.matrix.copy(this._scratchThreeMatrix);
+		this.group.updateMatrixWorld(true);
+	},
+
+	clear() {
+		if (this.group) {
+			this.scene.remove(this.group);
+			this.group = null;
 		}
 	}
 };
@@ -5120,11 +5346,22 @@ class PlaneController {
 		if (this.isTouchDevice) {
 			this.input.throttle = this.touchThrottleValue;
 
-			this.input.pitch = this.lerp(this.input.pitch, this.touchPitch, 0.25);
-			this.input.roll = this.lerp(this.input.roll, this.touchRoll, 0.25);
+			const deadzone = 0.08;
+			const applyDeadzone = (v) => {
+				if (Math.abs(v) < deadzone) return 0;
+				const sign = v > 0 ? 1 : -1;
+				return sign * ((Math.abs(v) - deadzone) / (1 - deadzone));
+			};
+			const targetPitch = applyDeadzone(this.touchPitch);
+			const targetRoll = applyDeadzone(this.touchRoll);
+
+			// Snappier response than the keyboard's lerp (0.1) - a dragged
+			// joystick is already an analog signal, extra smoothing just adds lag.
+			this.input.pitch = this.lerp(this.input.pitch, targetPitch, 0.5);
+			this.input.roll = this.lerp(this.input.roll, targetRoll, 0.5);
 
 			const yawTarget = (this.touchYawLeft ? -1 : (this.touchYawRight ? 1 : 0));
-			this.input.yaw = this.lerp(this.input.yaw, yawTarget, 0.15);
+			this.input.yaw = this.lerp(this.input.yaw, yawTarget, 0.2);
 
 			this.input.boost = this.touchBoost;
 			this.input.fire = this.touchFire;
@@ -5198,20 +5435,36 @@ let _cwPauseMiniViewer;
 
 function initCesium() {
 	let _worldTerrain;
-	try {
-		_worldTerrain = Cesium.Terrain.fromWorldTerrain();
-		if (_worldTerrain && typeof _worldTerrain.errorEvent === 'object' && _worldTerrain.errorEvent.addEventListener) {
-			_worldTerrain.errorEvent.addEventListener((err) => {
-				console.warn('[Web Flight Simulator] World terrain failed to load (likely a Cesium Ion token/network issue). Flight will continue using a flat ellipsoid instead of real elevation.', err);
-			});
+	let _baseImagery;
+
+	if (HAS_ION_TOKEN) {
+		try {
+			_worldTerrain = Cesium.Terrain.fromWorldTerrain();
+			if (_worldTerrain && typeof _worldTerrain.errorEvent === 'object' && _worldTerrain.errorEvent.addEventListener) {
+				_worldTerrain.errorEvent.addEventListener((err) => {
+					console.warn('[Web Flight Simulator] World terrain failed to load despite an Ion token being set - falling back to a flat ellipsoid.', err);
+				});
+			}
+		} catch (e) {
+			console.warn('[Web Flight Simulator] Could not initialize Cesium world terrain - falling back to a flat ellipsoid.', e);
+			_worldTerrain = undefined;
 		}
-	} catch (e) {
-		console.warn('[Web Flight Simulator] Could not initialize Cesium world terrain - falling back to a flat ellipsoid.', e);
-		_worldTerrain = undefined;
+		// leave _baseImagery undefined so Cesium uses its normal Ion-based default (e.g. Bing aerial)
+	} else {
+		console.log('[Web Flight Simulator] No Cesium Ion token set - using flat terrain + free OpenStreetMap imagery instead of world elevation/satellite data. Add your own token (see top of script) for the real thing.');
+		try {
+			_baseImagery = new Cesium.OpenStreetMapImageryProvider({
+				url: 'https://tile.openstreetmap.org/'
+			});
+		} catch (e) {
+			console.warn('[Web Flight Simulator] Could not initialize OpenStreetMap fallback imagery.', e);
+			_baseImagery = undefined;
+		}
 	}
 
 	_cwViewer = new Cesium.Viewer("cesiumContainer", {
 		terrain: _worldTerrain,
+		imageryProvider: _baseImagery,
 		timeline: false,
 		animation: false,
 		baseLayerPicker: false,
@@ -6824,6 +7077,8 @@ function initThree() {
 	directionalLight.layers.enable(1);
 
 	try { particles.init(scene, getViewer()); } catch (e) { }
+	try { cloudField.init(scene, getViewer()); } catch (e) { }
+	try { airport.init(scene, getViewer()); } catch (e) { }
 
 	initSounds().catch(err => console.error('Failed to init sounds', err));
 
@@ -7238,6 +7493,12 @@ function animate() {
 		if (mixer) mixer.update(dt);
 
 		try { if (currentState === States.FLYING) particles.update(dt); } catch (e) { }
+		try {
+			if (currentState === States.FLYING || currentState === States.PAUSED) {
+				cloudField.update(dt, state.lon, state.lat);
+				airport.update();
+			}
+		} catch (e) { }
 
 		renderer.render(scene, camera);
 
@@ -7370,6 +7631,8 @@ document.getElementById('respawnBtn').onclick = () => {
 function enterSpawnPicking(useVignette = true) {
 	state.score = 0;
 	if (npcSystem) npcSystem.clear();
+	try { cloudField.clear(); } catch (e) { }
+	try { airport.clear(); } catch (e) { }
 	stopAllFlyingSounds(0.3);
 	soundManager.play('zoom-in');
 	soundManager.play('wind', 1.0);
@@ -7675,6 +7938,15 @@ document.getElementById('confirmSpawnBtn').onclick = () => {
 		currentRegionName = null;
 		lastGeocodeTime = 0;
 		lastGeocodePos = { lon: 0, lat: 0 };
+
+		try {
+			let groundAlt = 0;
+			if (viewer && viewer.scene && viewer.scene.globe) {
+				const h = viewer.scene.globe.getHeight(Cesium.Cartographic.fromDegrees(state.lon, state.lat));
+				if (typeof h === 'number' && !isNaN(h)) groundAlt = h;
+			}
+			airport.spawnAt(state.lon, state.lat, groundAlt, state.heading);
+		} catch (e) { }
 
 		visualOffset.copy(BASE_PLANE_POS);
 		visualRotation.set(0, 0, 0);
