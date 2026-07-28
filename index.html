@@ -9025,16 +9025,32 @@ const unregisterGlobeTracker = viewer.scene.postRender.addEventListener(() => {
 	}
 });
 
+let terrainLoadingHideTimer = null;
 viewer.scene.globe.tileLoadProgressEvent.addEventListener((queueLength) => {
 	if (loadingIndicator && loadingText) {
 		if (currentState === States.PICK_SPAWN) {
 			if (queueLength > 0) {
+				if (terrainLoadingHideTimer) {
+					clearTimeout(terrainLoadingHideTimer);
+					terrainLoadingHideTimer = null;
+				}
 				loadingText.textContent = "Loading Terrain...";
 				loadingIndicator.classList.remove('hidden');
-			} else {
-				loadingIndicator.classList.add('hidden');
+			} else if (!terrainLoadingHideTimer) {
+				// Don't hide immediately - the tile queue briefly drops to 0
+				// between batches while panning, which would otherwise cause
+				// the indicator to flicker on/off rapidly. Wait a beat to see
+				// if more tiles start loading before hiding it.
+				terrainLoadingHideTimer = setTimeout(() => {
+					loadingIndicator.classList.add('hidden');
+					terrainLoadingHideTimer = null;
+				}, 400);
 			}
 		} else {
+			if (terrainLoadingHideTimer) {
+				clearTimeout(terrainLoadingHideTimer);
+				terrainLoadingHideTimer = null;
+			}
 			const isAllLoaded = loadingStatus.audio && loadingStatus.model && loadingStatus.cesium && loadingStatus.globe;
 			if (isAllLoaded) {
 				loadingIndicator.classList.add('hidden');
