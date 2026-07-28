@@ -2150,6 +2150,346 @@ input[type="range"]::-webkit-slider-thumb {
 	margin-right: 6px;
 }
 
+/* ==================== Camera view label / button ==================== */
+
+#camera-view-label {
+	position: absolute;
+	top: 18%;
+	left: 50%;
+	transform: translateX(-50%);
+	color: #0f0;
+	font-family: 'AceCombat', 'Courier New', Courier, monospace;
+	font-size: 20px;
+	letter-spacing: 3px;
+	text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+	background: rgba(0, 20, 0, 0.4);
+	border: 1px solid rgba(0, 255, 0, 0.5);
+	padding: 6px 18px;
+	border-radius: 4px;
+	pointer-events: none;
+	z-index: 45;
+}
+
+#touch-btn-view {
+	border-color: rgba(120, 200, 255, 0.7);
+	color: #7fd0ff;
+	text-shadow: 0 0 6px rgba(120, 200, 255, 0.6);
+}
+
+#touch-btn-view.touch-active {
+	background: rgba(120, 200, 255, 0.3);
+}
+
+/* ==================== Full-screen boot loading splash ==================== */
+
+.loading-container {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	right: auto;
+	bottom: auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 0;
+	padding: 26px 34px;
+	box-sizing: border-box;
+	background: #020602;
+	color: #0f0;
+	font-family: 'AceCombat', 'Courier New', Courier, monospace;
+	z-index: 9998;
+	overflow: hidden;
+	pointer-events: auto;
+	transition: opacity 0.4s ease;
+}
+
+.loading-container.hidden {
+	opacity: 0;
+	pointer-events: none;
+}
+
+.loading-bg-grid {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	background-image:
+		radial-gradient(circle at 20% 30%, rgba(0, 255, 0, 0.05) 0, transparent 3px),
+		radial-gradient(circle at 60% 70%, rgba(0, 255, 0, 0.05) 0, transparent 3px),
+		radial-gradient(circle at 80% 20%, rgba(0, 255, 0, 0.05) 0, transparent 3px),
+		linear-gradient(rgba(0, 255, 0, 0.035) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(0, 255, 0, 0.035) 1px, transparent 1px);
+	background-size: 220px 220px, 260px 260px, 300px 300px, 34px 34px, 34px 34px;
+	opacity: 0.6;
+}
+
+.loading-frame-corner {
+	position: absolute;
+	width: 46px;
+	height: 46px;
+	border: 2px solid rgba(0, 255, 0, 0.55);
+	pointer-events: none;
+}
+
+.corner-tl { top: 14px; left: 14px; border-right: none; border-bottom: none; }
+.corner-tr { top: 14px; right: 14px; border-left: none; border-bottom: none; }
+.corner-bl { bottom: 14px; left: 14px; border-right: none; border-top: none; }
+.corner-br { bottom: 14px; right: 14px; border-left: none; border-top: none; }
+
+.loading-bootlog {
+	position: absolute;
+	top: 26px;
+	left: 34px;
+	width: 340px;
+	max-width: 40vw;
+	font-size: 12px;
+	line-height: 1.7;
+}
+
+.loading-bootlog-title {
+	text-decoration: underline;
+	letter-spacing: 2px;
+	margin-bottom: 4px;
+	font-size: 12px;
+}
+
+#loading-bootlog-lines .bl-ok { color: #3dff5c; }
+#loading-bootlog-lines .bl-fail { color: #ff5c5c; }
+#loading-bootlog-lines .bl-pending { color: rgba(0, 255, 0, 0.5); }
+
+.loading-telemetry {
+	position: absolute;
+	top: 22px;
+	right: 34px;
+	border: 1px solid rgba(0, 255, 0, 0.5);
+	padding: 10px 16px;
+	font-size: 12px;
+	line-height: 1.65;
+	min-width: 150px;
+}
+
+.loading-telemetry div {
+	display: flex;
+	justify-content: space-between;
+	gap: 14px;
+}
+
+.loading-center {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-top: 6vh;
+	width: 100%;
+}
+
+.loading-title-main {
+	font-size: clamp(34px, 6vw, 76px);
+	letter-spacing: 10px;
+	text-shadow: 0 0 12px rgba(0, 255, 0, 0.7), 0 0 30px rgba(0, 255, 0, 0.3);
+	line-height: 1;
+}
+
+.loading-title-sub {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 16px;
+	font-size: clamp(14px, 2vw, 22px);
+	letter-spacing: 8px;
+	margin-top: 8px;
+	color: rgba(0, 255, 0, 0.85);
+}
+
+.loading-title-sub .rule {
+	width: 70px;
+	height: 1px;
+	background: rgba(0, 255, 0, 0.5);
+}
+
+.loading-radar {
+	width: min(260px, 30vh);
+	margin-top: 3vh;
+}
+
+.loading-radar-svg {
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+}
+
+.radar-ring {
+	fill: none;
+	stroke: rgba(0, 255, 0, 0.35);
+	stroke-width: 1;
+}
+
+.radar-cross {
+	stroke: rgba(0, 255, 0, 0.25);
+	stroke-width: 1;
+}
+
+.radar-deg {
+	fill: rgba(0, 255, 0, 0.7);
+	font-size: 11px;
+	text-anchor: middle;
+	font-family: 'Courier New', Courier, monospace;
+}
+
+.radar-sweep-fill {
+	fill: rgba(0, 255, 0, 0.22);
+}
+
+.radar-sweep {
+	transform-origin: 150px 150px;
+	animation: radarSweepSpin 3.2s linear infinite;
+}
+
+@keyframes radarSweepSpin {
+	from { transform: rotate(0deg); }
+	to { transform: rotate(360deg); }
+}
+
+.radar-plane path {
+	fill: #0f0;
+	filter: drop-shadow(0 0 4px rgba(0, 255, 0, 0.8));
+}
+
+.radar-blip {
+	fill: rgba(0, 255, 0, 0.8);
+	animation: radarBlipPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes radarBlipPulse {
+	0%, 100% { opacity: 0.4; }
+	50% { opacity: 1; }
+}
+
+.loading-status-text {
+	margin-top: 2.5vh;
+	font-size: 13px;
+	letter-spacing: 3px;
+	color: rgba(0, 255, 0, 0.85);
+	text-align: center;
+}
+
+.loading-progress-wrap {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	margin-top: 1.4vh;
+	width: min(640px, 80vw);
+}
+
+.loading-progress-track {
+	flex: 1;
+	height: 22px;
+	border: 1.5px solid rgba(0, 255, 0, 0.6);
+	background: rgba(0, 20, 0, 0.5);
+	position: relative;
+	overflow: hidden;
+}
+
+.loading-progress-fill {
+	height: 100%;
+	background: repeating-linear-gradient(
+		135deg,
+		rgba(0, 255, 0, 0.55) 0px,
+		rgba(0, 255, 0, 0.55) 10px,
+		rgba(0, 255, 0, 0.3) 10px,
+		rgba(0, 255, 0, 0.3) 20px
+	);
+	transition: width 0.35s ease;
+	box-shadow: 0 0 10px rgba(0, 255, 0, 0.5) inset;
+}
+
+.loading-progress-pct {
+	font-size: 24px;
+	min-width: 70px;
+	text-shadow: 0 0 8px rgba(0, 255, 0, 0.6);
+}
+
+.loading-tip {
+	margin-top: 1.4vh;
+	font-size: 11px;
+	letter-spacing: 1px;
+	color: rgba(0, 255, 0, 0.55);
+	text-align: center;
+}
+
+.loading-status-row {
+	position: absolute;
+	bottom: 78px;
+	left: 34px;
+	right: 34px;
+	display: flex;
+	justify-content: center;
+	gap: 2.2vw;
+	flex-wrap: wrap;
+}
+
+.loading-status-box {
+	border: 1px solid rgba(0, 255, 0, 0.4);
+	padding: 10px 16px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	min-width: 140px;
+}
+
+.loading-status-box .status-icon {
+	width: 26px;
+	height: 26px;
+	color: #0f0;
+	flex-shrink: 0;
+}
+
+.loading-status-box .status-label {
+	font-size: 11px;
+	letter-spacing: 1px;
+	color: rgba(0, 255, 0, 0.75);
+}
+
+.loading-status-box .status-value {
+	font-size: 13px;
+	font-weight: bold;
+}
+
+.loading-status-box.status-ok .status-value { color: #3dff5c; }
+.loading-status-box.status-fail .status-value { color: #ff5c5c; }
+.loading-status-box.status-fail .status-icon { color: #ff5c5c; }
+.loading-status-box.status-pending .status-value { color: rgba(0, 255, 0, 0.4); }
+
+.loading-footer {
+	position: absolute;
+	bottom: 22px;
+	left: 34px;
+	right: 34px;
+	text-align: center;
+	letter-spacing: 5px;
+	font-size: 14px;
+	border-top: 1px solid rgba(0, 255, 0, 0.3);
+	padding-top: 12px;
+}
+
+.loading-footer-deco {
+	color: rgba(0, 255, 0, 0.5);
+	margin: 0 10px;
+}
+
+@media (max-width: 700px) {
+	.loading-bootlog { position: static; width: 100%; max-width: 100%; margin-bottom: 10px; }
+	.loading-telemetry { position: static; margin-bottom: 10px; }
+	.loading-container { overflow-y: auto; padding-top: 16px; }
+	.loading-status-row { position: static; margin-top: 2vh; }
+	.loading-footer { position: static; margin-top: 2vh; }
+	.loading-center { margin-top: 1vh; }
+}
+
 	</style>
 </head>
 
@@ -2212,8 +2552,101 @@ input[type="range"]::-webkit-slider-thumb {
 	</div>
 
 	<div id="loadingIndicator" class="loading-container">
-		<div class="spinner"></div>
-		<div id="loadingText" class="loading-text">Loading system...</div>
+		<div class="loading-bg-grid"></div>
+		<div class="loading-frame-corner corner-tl"></div>
+		<div class="loading-frame-corner corner-tr"></div>
+		<div class="loading-frame-corner corner-bl"></div>
+		<div class="loading-frame-corner corner-br"></div>
+
+		<div class="loading-bootlog">
+			<div class="loading-bootlog-title">SYSTEM LOG</div>
+			<div id="loading-bootlog-lines"></div>
+		</div>
+
+		<div class="loading-telemetry">
+			<div><span>VER</span><span>1.0.0</span></div>
+			<div><span>ALT</span><span id="loading-tm-alt">00000 FT</span></div>
+			<div><span>SPD</span><span id="loading-tm-spd">000 KTS</span></div>
+			<div><span>HDG</span><span id="loading-tm-hdg">000&deg;</span></div>
+			<div><span>LAT</span><span id="loading-tm-lat">00.0000&deg;</span></div>
+			<div><span>LON</span><span id="loading-tm-lon">00.0000&deg;</span></div>
+			<div><span>UTC</span><span id="loading-tm-utc">00:00:00</span></div>
+		</div>
+
+		<div class="loading-center">
+			<div class="loading-title">
+				<div class="loading-title-main">WEB FLIGHT</div>
+				<div class="loading-title-sub"><span class="rule"></span><span>SIMULATOR</span><span class="rule"></span></div>
+			</div>
+
+			<div class="loading-radar">
+				<svg viewBox="0 0 300 300" class="loading-radar-svg">
+					<circle cx="150" cy="150" r="130" class="radar-ring" />
+					<circle cx="150" cy="150" r="95" class="radar-ring" />
+					<circle cx="150" cy="150" r="60" class="radar-ring" />
+					<circle cx="150" cy="150" r="25" class="radar-ring" />
+					<line x1="150" y1="20" x2="150" y2="280" class="radar-cross" />
+					<line x1="20" y1="150" x2="280" y2="150" class="radar-cross" />
+					<text x="150" y="16" class="radar-deg">0</text>
+					<text x="288" y="155" class="radar-deg">90</text>
+					<text x="150" y="296" class="radar-deg">180</text>
+					<text x="8" y="155" class="radar-deg">270</text>
+					<g class="radar-sweep">
+						<path d="M150,150 L150,20 A130,130 0 0,1 262,90 Z" class="radar-sweep-fill" />
+					</g>
+					<circle cx="235" cy="112" r="4" class="radar-blip" />
+					<circle cx="200" cy="200" r="4" class="radar-blip" />
+					<g class="radar-plane" transform="translate(150,150)">
+						<path d="M0,-16 L5,6 L16,10 L16,14 L5,12 L5,20 L10,24 L10,27 L0,25 L-10,27 L-10,24 L-5,20 L-5,12 L-16,14 L-16,10 L-5,6 Z" />
+					</g>
+				</svg>
+			</div>
+
+			<div id="loadingText" class="loading-status-text">PREPARING YOUR FLIGHT EXPERIENCE...</div>
+
+			<div class="loading-progress-wrap">
+				<div class="loading-progress-track">
+					<div id="loading-progress-fill" class="loading-progress-fill" style="width:0%"></div>
+				</div>
+				<div id="loading-progress-pct" class="loading-progress-pct">0%</div>
+			</div>
+
+			<div class="loading-tip">TIP: ADJUST YOUR SETTINGS IN SYSTEM CONFIG FOR THE BEST EXPERIENCE.</div>
+		</div>
+
+		<div class="loading-status-row">
+			<div class="loading-status-box" id="loading-status-nav">
+				<svg viewBox="0 0 24 24" class="status-icon"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.5" /><line x1="12" y1="2" x2="12" y2="6" stroke="currentColor" stroke-width="1.5" /><line x1="12" y1="18" x2="12" y2="22" stroke="currentColor" stroke-width="1.5" /><line x1="2" y1="12" x2="6" y2="12" stroke="currentColor" stroke-width="1.5" /><line x1="18" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="1.5" /><circle cx="12" cy="12" r="2" fill="currentColor" /></svg>
+				<div class="status-label">NAVIGATION</div>
+				<div class="status-value">PENDING</div>
+			</div>
+			<div class="loading-status-box" id="loading-status-systems">
+				<svg viewBox="0 0 24 24" class="status-icon"><rect x="7" y="7" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" /><line x1="9" y1="2" x2="9" y2="7" stroke="currentColor" stroke-width="1.5" /><line x1="15" y1="2" x2="15" y2="7" stroke="currentColor" stroke-width="1.5" /><line x1="9" y1="17" x2="9" y2="22" stroke="currentColor" stroke-width="1.5" /><line x1="15" y1="17" x2="15" y2="22" stroke="currentColor" stroke-width="1.5" /><line x1="2" y1="9" x2="7" y2="9" stroke="currentColor" stroke-width="1.5" /><line x1="2" y1="15" x2="7" y2="15" stroke="currentColor" stroke-width="1.5" /><line x1="17" y1="9" x2="22" y2="9" stroke="currentColor" stroke-width="1.5" /><line x1="17" y1="15" x2="22" y2="15" stroke="currentColor" stroke-width="1.5" /></svg>
+				<div class="status-label">SYSTEMS</div>
+				<div class="status-value">PENDING</div>
+			</div>
+			<div class="loading-status-box" id="loading-status-connection">
+				<svg viewBox="0 0 24 24" class="status-icon"><path d="M2 8 Q12 -1 22 8" fill="none" stroke="currentColor" stroke-width="1.5" /><path d="M5 12 Q12 5 19 12" fill="none" stroke="currentColor" stroke-width="1.5" /><path d="M8.5 16 Q12 12 15.5 16" fill="none" stroke="currentColor" stroke-width="1.5" /><circle cx="12" cy="20" r="1.6" fill="currentColor" /></svg>
+				<div class="status-label">CONNECTION</div>
+				<div class="status-value">PENDING</div>
+			</div>
+			<div class="loading-status-box" id="loading-status-aircraft">
+				<svg viewBox="0 0 24 24" class="status-icon"><path d="M12 2 L14 9 L22 13 L22 15 L14 13 L14 18 L18 21 L18 22.5 L12 21 L6 22.5 L6 21 L10 18 L10 13 L2 15 L2 13 L10 9 Z" fill="currentColor" /></svg>
+				<div class="status-label">AIRCRAFT</div>
+				<div class="status-value">PENDING</div>
+			</div>
+			<div class="loading-status-box" id="loading-status-weather">
+				<svg viewBox="0 0 24 24" class="status-icon"><path d="M7 18a4.5 4.5 0 0 1-.5-8.97A5.5 5.5 0 0 1 17 8.5a4 4 0 0 1-.9 7.9z" fill="none" stroke="currentColor" stroke-width="1.5" /></svg>
+				<div class="status-label">WEATHER</div>
+				<div class="status-value">PENDING</div>
+			</div>
+		</div>
+
+		<div class="loading-footer">
+			<span class="loading-footer-deco">&bull;&bull;</span>
+			<span id="loading-footer-text">STANDBY FOR TAKEOFF</span>
+			<span class="loading-footer-deco">&bull;&bull;</span>
+		</div>
 	</div>
 
 	<div id="optionsModal" class="modal hidden">
@@ -2310,6 +2743,8 @@ input[type="range"]::-webkit-slider-thumb {
 			<div class="control-grid">
 				<div class="key">DRAG MOUSE</div>
 				<div>Look Around / Orbit</div>
+				<div class="key">C</div>
+				<div>Cycle Camera View (Chase / Cockpit / Orbit)</div>
 				<div class="key">ESC / P</div>
 				<div>Pause / Tactical Menu</div>
 			</div>
@@ -2573,11 +3008,14 @@ input[type="range"]::-webkit-slider-thumb {
 			</div>
 
 			<div id="touch-action-zone">
+				<button id="touch-btn-view" class="touch-btn touch-action-btn">CHASE</button>
 				<button id="touch-btn-weapon" class="touch-btn touch-action-btn">WPN</button>
 				<button id="touch-btn-flare" class="touch-btn touch-action-btn">FLARE</button>
 				<button id="touch-btn-boost" class="touch-btn touch-action-btn touch-boost-btn">BOOST</button>
 				<button id="touch-btn-fire" class="touch-btn touch-fire-btn">FIRE</button>
 			</div>
+
+			<div id="camera-view-label" class="hidden">CHASE VIEW</div>
 		</div>
 	</div>
 
@@ -2709,7 +3147,7 @@ if (HAS_ION_TOKEN) {
 
 	console.log = (...args) => { origLog(...args); logToScreen('info', args); };
 	console.warn = (...args) => { origWarn(...args); logToScreen('warn', args); };
-	console.error = (...args) => { origError(...args); logToScreen('error', args); };
+	console.error = (...args) => { origError(...args); logToScreen('error', args); window.__wfsErrorCount = (window.__wfsErrorCount || 0) + 1; };
 
 	function unstick(reason) {
 		console.error('[Web Flight Simulator] Unrecoverable error, unlocking UI so you are not stuck:', reason);
@@ -3231,6 +3669,125 @@ const airport = {
 	}
 };
 
+// ==================== groundTerrain.js (new - procedural land near the player) ====================
+// Only used when there's no real Cesium Ion terrain (HAS_ION_TOKEN is false),
+// since with real terrain this would just clip through/duplicate it. Renders
+// one bounded patch of gently rolling ground that recenters under the player
+// as they fly - this patch size IS the render distance (kept intentionally
+// small so it stays cheap to rebuild).
+const groundTerrain = {
+	scene: null,
+	viewer: null,
+	mesh: null,
+	anchorLon: null,
+	anchorLat: null,
+	size: 16000, // total patch width/length in meters - the "render distance" for land
+	recenterThreshold: 4000,
+	_texture: null,
+	_scratchMatrix: new Cesium.Matrix4(),
+	_scratchCameraMatrix: new Cesium.Matrix4(),
+	_scratchThreeMatrix: new THREE.Matrix4(),
+
+	init(scene, viewer) {
+		this.scene = scene;
+		this.viewer = viewer;
+		this._texture = this._makeGroundTexture();
+	},
+
+	_makeGroundTexture() {
+		const size = 256;
+		const canvas = document.createElement('canvas');
+		canvas.width = canvas.height = size;
+		const ctx = canvas.getContext('2d');
+		ctx.fillStyle = '#3d6b34';
+		ctx.fillRect(0, 0, size, size);
+		for (let i = 0; i < 900; i++) {
+			const x = Math.random() * size, y = Math.random() * size;
+			const g = 90 + Math.random() * 70;
+			const r = 45 + Math.random() * 35;
+			const b = 25 + Math.random() * 20;
+			ctx.fillStyle = `rgba(${Math.floor(r)},${Math.floor(g)},${Math.floor(b)},0.5)`;
+			const s = 3 + Math.random() * 10;
+			ctx.fillRect(x, y, s, s);
+		}
+		const tex = new THREE.CanvasTexture(canvas);
+		tex.wrapS = THREE.RepeatWrapping;
+		tex.wrapT = THREE.RepeatWrapping;
+		tex.repeat.set(48, 48);
+		return tex;
+	},
+
+	_noise(x, y) {
+		return (
+			Math.sin(x * 0.00021 + 12.9898) * Math.cos(y * 0.00017 + 78.233) * 0.6 +
+			Math.sin(x * 0.00047 + 4.53) * Math.cos(y * 0.00039 + 19.19) * 0.3 +
+			Math.sin(x * 0.0011 + 91.1) * Math.cos(y * 0.0009 + 7.7) * 0.1
+		);
+	},
+
+	_buildMesh(centerLon, centerLat) {
+		if (this.mesh) {
+			this.scene.remove(this.mesh);
+			this.mesh.geometry.dispose();
+			this.mesh = null;
+		}
+		try {
+			const segments = 48;
+			const geom = new THREE.PlaneGeometry(this.size, this.size, segments, segments);
+			const posAttr = geom.attributes.position;
+			for (let i = 0; i < posAttr.count; i++) {
+				const x = posAttr.getX(i);
+				const y = posAttr.getY(i);
+				const h = this._noise(x, y) * 85;
+				posAttr.setZ(i, h);
+			}
+			geom.computeVertexNormals();
+			const mat = new THREE.MeshStandardMaterial({ map: this._texture, roughness: 1, metalness: 0 });
+			const mesh = new THREE.Mesh(geom, mat);
+			mesh.rotation.x = -Math.PI / 2;
+			mesh.matrixAutoUpdate = false;
+			this.scene.add(mesh);
+			this.mesh = mesh;
+		} catch (e) {
+			console.warn('[Web Flight Simulator] Could not build ground terrain patch.', e);
+		}
+		this.anchorLon = centerLon;
+		this.anchorLat = centerLat;
+	},
+
+	update(playerLon, playerLat) {
+		if (!this.viewer || typeof playerLon !== 'number' || typeof playerLat !== 'number') return;
+
+		if (this.anchorLon === null) {
+			this._buildMesh(playerLon, playerLat);
+		} else {
+			const dLon = (playerLon - this.anchorLon) * 111320 * Math.cos(Cesium.Math.toRadians(playerLat));
+			const dLat = (playerLat - this.anchorLat) * 111320;
+			const dist = Math.sqrt(dLon * dLon + dLat * dLat);
+			if (dist > this.recenterThreshold) this._buildMesh(playerLon, playerLat);
+		}
+
+		if (!this.mesh) return;
+		const pos = Cesium.Cartesian3.fromDegrees(this.anchorLon, this.anchorLat, 0, undefined, new Cesium.Cartesian3());
+		const modelMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(pos, undefined, this._scratchMatrix);
+		const viewMatrix = this.viewer.camera.viewMatrix;
+		const cameraSpaceMatrix = Cesium.Matrix4.multiply(viewMatrix, modelMatrix, this._scratchCameraMatrix);
+		for (let j = 0; j < 16; j++) this._scratchThreeMatrix.elements[j] = cameraSpaceMatrix[j];
+		this.mesh.matrix.copy(this._scratchThreeMatrix);
+		this.mesh.updateMatrixWorld(true);
+	},
+
+	clear() {
+		if (this.mesh) {
+			this.scene.remove(this.mesh);
+			this.mesh.geometry.dispose();
+			this.mesh = null;
+		}
+		this.anchorLon = null;
+		this.anchorLat = null;
+	}
+};
+
 // ==================== soundManager.js (sound disabled - no-op stub) ====================
 class SoundManager {
 	constructor() {
@@ -3394,9 +3951,9 @@ class JetFlame {
 // ==================== planePhysics.js ====================
 class PlanePhysics {
 	constructor() {
-		this.speed = 100;
-		this.maxSpeed = 1000;
-		this.minSpeed = 100;
+		this.speed = 70;
+		this.maxSpeed = 550;
+		this.minSpeed = 70;
 		this.throttle = 0.5;
 		this.enginePower = 1.2;
 		this.drag = 0.005;
@@ -3410,11 +3967,15 @@ class PlanePhysics {
 		this.pitchRate = 1.2;
 		this.rollRate = 2.5;
 		this.yawRate = 0.5;
+		// How strongly banking (roll) induces an actual turn (heading change),
+		// like a real coordinated turn - roll alone now turns the plane instead
+		// of needing separate rudder input for every turn.
+		this.turnCoupling = 1.1;
 
 		this.isBoosting = false;
 		this.boostTimeRemaining = 0;
 		this.boostDuration = 2.5;
-		this.boostMultiplier = 1.5;
+		this.boostMultiplier = 1.4;
 		this.boostRotations = 2;
 		this.boostPressed = false;
 
@@ -3473,7 +4034,10 @@ class PlanePhysics {
 
 		const localPitch = input.pitch * this.pitchRate * dt * controlEffectiveness;
 		const localRoll = input.roll * this.rollRate * dt * controlEffectiveness;
-		const localYaw = input.yaw * this.yawRate * dt * controlEffectiveness;
+		// Coordinated turn: banking induces an actual heading change (using the
+		// roll from the previous frame), on top of any explicit rudder input.
+		const bankTurn = Math.sin(THREE.MathUtils.degToRad(this.roll)) * this.turnCoupling * dt * controlEffectiveness;
+		const localYaw = (input.yaw * this.yawRate * dt * controlEffectiveness) + bankTurn;
 
 		const qPitch = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), localPitch);
 		const qRoll = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), localRoll);
@@ -4755,6 +5319,8 @@ class NPCSystem {
 		this.animations = [];
 		this.loaded = false;
 
+		this.commercialModel = this._buildCommercialMesh();
+
 		this._scratchMatrix = new Cesium.Matrix4();
 		this._scratchHPR = new Cesium.HeadingPitchRoll();
 		this._scratchCartesian = new Cesium.Cartesian3();
@@ -4762,6 +5328,60 @@ class NPCSystem {
 		this._scratchCameraMatrix = new Cesium.Matrix4();
 
 		this.loadModel();
+	}
+
+	_buildCommercialMesh() {
+		// Procedural airliner (no external model file needed). Built in the
+		// same local-axis convention as the F-15 GLTF (forward = -Z, up = +Y)
+		// so it can reuse the exact same `rotation.x = Math.PI/2` alignment
+		// step used for fighters when placed in the world.
+		const group = new THREE.Group();
+		const bodyMat = new THREE.MeshStandardMaterial({ color: 0xf0f0f0, metalness: 0.25, roughness: 0.55 });
+		const accentMat = new THREE.MeshStandardMaterial({ color: 0x1f5fa8, metalness: 0.2, roughness: 0.6 });
+		const glassMat = new THREE.MeshStandardMaterial({ color: 0x1a2530, metalness: 0.5, roughness: 0.3 });
+
+		const fuselageGeom = new THREE.CylinderGeometry(1.1, 1.1, 11, 16);
+		fuselageGeom.rotateX(Math.PI / 2);
+		const fuselage = new THREE.Mesh(fuselageGeom, bodyMat);
+		group.add(fuselage);
+
+		const noseGeom = new THREE.ConeGeometry(1.1, 2.6, 16);
+		noseGeom.rotateX(-Math.PI / 2);
+		noseGeom.translate(0, 0, -6.8);
+		group.add(new THREE.Mesh(noseGeom, bodyMat));
+
+		const cockpitStripGeom = new THREE.BoxGeometry(1.4, 0.35, 1.6);
+		cockpitStripGeom.translate(0, 0.85, -5.6);
+		group.add(new THREE.Mesh(cockpitStripGeom, glassMat));
+
+		const wingGeom = new THREE.BoxGeometry(15, 0.22, 2.6);
+		wingGeom.translate(0, -0.2, 0.6);
+		group.add(new THREE.Mesh(wingGeom, bodyMat));
+
+		const stabGeom = new THREE.BoxGeometry(5.5, 0.2, 1.4);
+		stabGeom.translate(0, 0.3, 5.0);
+		group.add(new THREE.Mesh(stabGeom, bodyMat));
+
+		const finGeom = new THREE.BoxGeometry(0.2, 2.3, 1.7);
+		finGeom.translate(0, 1.9, 5.1);
+		group.add(new THREE.Mesh(finGeom, accentMat));
+
+		const engineGeom = new THREE.CylinderGeometry(0.55, 0.5, 2.6, 12);
+		engineGeom.rotateX(Math.PI / 2);
+		for (const side of [-1, 1]) {
+			const engine = new THREE.Mesh(engineGeom, accentMat);
+			engine.position.set(side * 4.2, -1.1, 0.6);
+			group.add(engine);
+		}
+
+		group.traverse((child) => {
+			if (child.isMesh) {
+				child.castShadow = true;
+				child.receiveShadow = true;
+			}
+		});
+
+		return group;
 	}
 
 	loadModel() {
@@ -4779,6 +5399,20 @@ class NPCSystem {
 	}
 
 	spawnNPC(playerLon, playerLat, playerAlt) {
+		const isCommercial = Math.random() < 0.4;
+		if (isCommercial) {
+			const angle = Math.random() * Math.PI * 2;
+			const dist = 6000 + Math.random() * 18000;
+			const lonOffset = (dist * Math.cos(angle)) / (111320 * Math.cos(Cesium.Math.toRadians(playerLat)));
+			const latOffset = (dist * Math.sin(angle)) / 111320;
+			const airlines = ['SKYWARD', 'ATLAS', 'PACIFICA', 'AURORA', 'MERIDIAN', 'HORIZON'];
+			const name = airlines[Math.floor(Math.random() * airlines.length)] + ' ' + (100 + Math.floor(Math.random() * 900));
+			const lon = playerLon + lonOffset;
+			const lat = playerLat + latOffset;
+			const alt = Math.max(playerAlt, 3500) + (Math.random() - 0.3) * 1500;
+			return this.createNPCMesh(name, lon, lat, alt, Math.random() * 360, 200 + Math.random() * 60, 'commercial');
+		}
+
 		if (!this.loaded) return null;
 
 		const angle = Math.random() * Math.PI * 2;
@@ -4793,14 +5427,19 @@ class NPCSystem {
 		const lat = playerLat + latOffset;
 		const alt = Math.max(playerAlt + (Math.random() - 0.5) * 1000, 1500);
 
-		return this.createNPCMesh(name, lon, lat, alt, Math.random() * 360, 250 + Math.random() * 100);
+		return this.createNPCMesh(name, lon, lat, alt, Math.random() * 360, 250 + Math.random() * 100, 'fighter');
 	}
 
-	createNPCMesh(name, lon, lat, alt, heading, speed) {
-		if (!this.modelTemplate) return null;
+	createNPCMesh(name, lon, lat, alt, heading, speed, type = 'fighter') {
+		let model;
+		if (type === 'commercial') {
+			model = this.commercialModel.clone();
+		} else {
+			if (!this.modelTemplate) return null;
+			model = this.modelTemplate.clone();
+		}
 
 		const group = new THREE.Group();
-		const model = this.modelTemplate.clone();
 
 		model.rotation.x = Math.PI / 2;
 		model.scale.set(1.0, 1.0, 1.0);
@@ -4809,13 +5448,16 @@ class NPCSystem {
 		group.matrixAutoUpdate = false;
 		this.scene.add(group);
 
-		const mixer = new THREE.AnimationMixer(model);
-		const clip = THREE.AnimationClip.findByName(this.animations, 'flight_mode');
-		if (clip) {
-			const action = mixer.clipAction(clip);
-			action.setLoop(THREE.LoopOnce);
-			action.clampWhenFinished = true;
-			action.play();
+		let mixer = null;
+		if (type !== 'commercial') {
+			mixer = new THREE.AnimationMixer(model);
+			const clip = THREE.AnimationClip.findByName(this.animations, 'flight_mode');
+			if (clip) {
+				const action = mixer.clipAction(clip);
+				action.setLoop(THREE.LoopOnce);
+				action.clampWhenFinished = true;
+				action.play();
+			}
 		}
 
 		const npc = {
@@ -4823,6 +5465,7 @@ class NPCSystem {
 			mesh: group,
 			mixer: mixer,
 			name: name,
+			type: type,
 			lon: lon, lat: lat, alt: alt,
 			heading: heading,
 			pitch: 0, roll: 0,
@@ -4841,8 +5484,6 @@ class NPCSystem {
 	}
 
 	update(dt, playerPos) {
-		if (!this.loaded) return;
-
 		const viewMatrix = this.viewer.camera.viewMatrix;
 
 		for (let i = this.npcs.length - 1; i >= 0; i--) {
@@ -4858,11 +5499,19 @@ class NPCSystem {
 			npc.terrainCheckTimer -= dt;
 
 			if (npc.behaviorTimer <= 0) {
-				npc.targetHeading = (npc.heading + (Math.random() - 0.5) * 120) % 360;
-				npc.targetPitch = (Math.random() - 0.5) * 25;
-				npc.behaviorTimer = 8 + Math.random() * 15;
-				npc.isBoosting = Math.random() > 0.7;
-				npc.throttle = 0.6 + Math.random() * 0.4;
+				if (npc.type === 'commercial') {
+					npc.targetHeading = (npc.heading + (Math.random() - 0.5) * 50) % 360;
+					npc.targetPitch = (Math.random() - 0.5) * 6;
+					npc.behaviorTimer = 15 + Math.random() * 20;
+					npc.isBoosting = false;
+					npc.throttle = 0.55 + Math.random() * 0.15;
+				} else {
+					npc.targetHeading = (npc.heading + (Math.random() - 0.5) * 120) % 360;
+					npc.targetPitch = (Math.random() - 0.5) * 25;
+					npc.behaviorTimer = 8 + Math.random() * 15;
+					npc.isBoosting = Math.random() > 0.7;
+					npc.throttle = 0.6 + Math.random() * 0.4;
+				}
 			}
 
 			if (npc.terrainCheckTimer <= 0) {
@@ -5210,8 +5859,15 @@ class PlaneController {
 				dy = (dy / dist) * radius;
 			}
 			if (joyKnob) joyKnob.style.transform = `translate(${dx}px, ${dy}px)`;
-			this.touchPitch = Math.max(-1, Math.min(1, dy / radius));
-			this.touchRoll = Math.max(-1, Math.min(1, dx / radius));
+			// Sensitivity tuning for touch: cap the max output below 1.0 (full
+			// deflection no longer commands max rate/sec) and ease the curve so
+			// small movements near center are much finer than a linear mapping.
+			const TOUCH_MAX_OUTPUT = 0.62;
+			const rawPitch = Math.max(-1, Math.min(1, dy / radius));
+			const rawRoll = Math.max(-1, Math.min(1, dx / radius));
+			const ease = (v) => Math.sign(v) * Math.pow(Math.abs(v), 1.6) * TOUCH_MAX_OUTPUT;
+			this.touchPitch = ease(rawPitch);
+			this.touchRoll = ease(rawRoll);
 		};
 
 		const joyReset = () => {
@@ -5323,6 +5979,22 @@ class PlaneController {
 			};
 			wpnBtn.addEventListener('touchend', wpnEnd);
 			wpnBtn.addEventListener('touchcancel', wpnEnd);
+		}
+
+		// --- One-shot: cycle camera view ---
+		const viewBtn = document.getElementById('touch-btn-view');
+		if (viewBtn) {
+			viewBtn.addEventListener('touchstart', (e) => {
+				e.preventDefault();
+				viewBtn.classList.add('touch-active');
+				if (typeof cycleCameraView === 'function') cycleCameraView();
+			}, { passive: false });
+			const viewEnd = (e) => {
+				if (e) e.preventDefault();
+				viewBtn.classList.remove('touch-active');
+			};
+			viewBtn.addEventListener('touchend', viewEnd);
+			viewBtn.addEventListener('touchcancel', viewEnd);
 		}
 	}
 
@@ -5443,6 +6115,7 @@ function initCesium() {
 			if (_worldTerrain && typeof _worldTerrain.errorEvent === 'object' && _worldTerrain.errorEvent.addEventListener) {
 				_worldTerrain.errorEvent.addEventListener((err) => {
 					console.warn('[Web Flight Simulator] World terrain failed to load despite an Ion token being set - falling back to a flat ellipsoid.', err);
+					loadingStatus.errors.globe = 'terrain failed';
 				});
 			}
 		} catch (e) {
@@ -6175,7 +6848,7 @@ class HUD {
 		});
 	}
 
-	update(state, npcs = []) {
+	update(state, npcs = [], airports = []) {
 		const lerpFactor = 0.5;
 
 		const lerpAngle = (current, target, factor) => {
@@ -6328,11 +7001,11 @@ class HUD {
 			pitchLines.style.transform = `translateY(${this.smoothedPitch * 6}px)`;
 		}
 
-		this.drawMinimap(state, npcs);
+		this.drawMinimap(state, npcs, airports);
 		this.updateNPCMarkers(npcs, state);
 	}
 
-	drawMinimap(state, npcs = []) {
+	drawMinimap(state, npcs = [], airports = []) {
 		if (!this.miniCtx || !this.minimapCanvas) return;
 
 		const ctx = this.miniCtx;
@@ -6403,6 +7076,35 @@ class HUD {
 			ctx.lineTo(-6, 6);
 			ctx.closePath();
 			ctx.fill();
+			ctx.restore();
+		});
+
+		airports.forEach(ap => {
+			const dist = calculateDistance(state.lon, state.lat, ap.lon, ap.lat);
+			if (dist > this.minimapRange * 5000) return;
+
+			const dx_m = (ap.lon - state.lon) * 111320 * Math.cos(state.lat * Math.PI / 180);
+			const dy_m = (ap.lat - state.lat) * 111320;
+
+			const px = dx_m * pixelsPerMeter;
+			const py = -dy_m * pixelsPerMeter;
+
+			if (Math.sqrt(px * px + py * py) > radius - 5) return;
+
+			ctx.save();
+			ctx.translate(px, py);
+			ctx.rotate(heading * Math.PI / 180);
+
+			ctx.strokeStyle = '#4fd0ff';
+			ctx.fillStyle = '#4fd0ff';
+			ctx.shadowBlur = 0;
+			ctx.lineWidth = 1.3;
+			ctx.strokeRect(-4, -4, 8, 8);
+			ctx.beginPath();
+			ctx.moveTo(0, -6);
+			ctx.lineTo(0, 6);
+			ctx.stroke();
+
 			ctx.restore();
 		});
 
@@ -6907,6 +7609,34 @@ let visualOffset = new THREE.Vector3().copy(BASE_PLANE_POS);
 let visualRotation = new THREE.Euler(0, 0, 0);
 let boostRoll = 0;
 let currentBoostZOffset = 0;
+
+// ---- Camera views: CHASE (default third-person), COCKPIT (first-person,
+// own aircraft hidden), ORBIT (wide cinematic third-person) ----
+const CAMERA_VIEWS = ['chase', 'cockpit', 'orbit'];
+const VIEW_OFFSETS = {
+	chase: BASE_PLANE_POS,
+	cockpit: new THREE.Vector3(0, -0.05, -0.15),
+	orbit: new THREE.Vector3(0, -1.5, -6.5)
+};
+let cameraViewIndex = 0;
+let nearbyAirports = [];
+
+function getActiveViewOffset() {
+	return VIEW_OFFSETS[CAMERA_VIEWS[cameraViewIndex]] || BASE_PLANE_POS;
+}
+
+function cycleCameraView() {
+	cameraViewIndex = (cameraViewIndex + 1) % CAMERA_VIEWS.length;
+	const viewBtn = document.getElementById('touch-btn-view');
+	if (viewBtn) viewBtn.textContent = CAMERA_VIEWS[cameraViewIndex].toUpperCase();
+	const viewLabel = document.getElementById('camera-view-label');
+	if (viewLabel) {
+		viewLabel.textContent = CAMERA_VIEWS[cameraViewIndex].toUpperCase() + ' VIEW';
+		viewLabel.classList.remove('hidden');
+		clearTimeout(cycleCameraView._hideTimer);
+		cycleCameraView._hideTimer = setTimeout(() => viewLabel.classList.add('hidden'), 1200);
+	}
+}
 let boostRollDirection = 1;
 let lastIsBoosting = false;
 let initialCameraView = null;
@@ -6932,8 +7662,59 @@ const loadingStatus = {
 	model: false,
 	cesium: false,
 	globe: false,
-	failed: false
+	failed: false,
+	errors: { audio: null, model: null, cesium: null, globe: null }
 };
+
+const BOOT_LINES = [
+	{ id: 'boot', label: 'BOOTING SYSTEMS...' },
+	{ id: 'cesium', label: 'INITIALIZING AVIONICS...' },
+	{ id: 'globe', label: 'LOADING NAV DATA...' },
+	{ id: 'audio', label: 'CONNECTING SERVICES...' },
+	{ id: 'model', label: 'LOADING AIRCRAFT...' }
+];
+let bootLinesRendered = 0;
+
+function renderBootLines() {
+	const container = document.getElementById('loading-bootlog-lines');
+	if (!container) return;
+
+	const gateDone = {
+		boot: true,
+		cesium: loadingStatus.cesium,
+		globe: loadingStatus.globe,
+		audio: loadingStatus.audio,
+		model: loadingStatus.model
+	};
+
+	let html = '';
+	for (let i = 0; i < BOOT_LINES.length; i++) {
+		const line = BOOT_LINES[i];
+		const done = gateDone[line.id];
+		const errMsg = loadingStatus.errors[line.id];
+		if (i > bootLinesRendered) break;
+		if (errMsg) {
+			html += `<div>&gt; ${line.label} <span class="bl-fail">[ FAIL: ${errMsg} ]</span></div>`;
+		} else if (done) {
+			html += `<div>&gt; ${line.label} <span class="bl-ok">[ OK ]</span></div>`;
+		} else {
+			html += `<div>&gt; ${line.label}<span class="bl-pending">_</span></div>`;
+		}
+		if (done && i === bootLinesRendered && bootLinesRendered < BOOT_LINES.length - 1) {
+			bootLinesRendered++;
+		}
+	}
+	container.innerHTML = html;
+}
+
+function setStatusBox(boxId, state, label) {
+	const box = document.getElementById(boxId);
+	if (!box) return;
+	box.classList.remove('status-ok', 'status-fail', 'status-pending');
+	box.classList.add('status-' + state);
+	const valueEl = box.querySelector('.status-value');
+	if (valueEl) valueEl.textContent = label || (state === 'ok' ? 'OK' : state === 'fail' ? 'FAIL' : 'PENDING');
+}
 
 function updateLoadingUI() {
 	if (!loadingIndicator || !loadingText || !startBtn) return;
@@ -6943,36 +7724,49 @@ function updateLoadingUI() {
 		return;
 	}
 
-	let msg = "";
 	const isAllLoaded = loadingStatus.audio && loadingStatus.model && loadingStatus.cesium && loadingStatus.globe;
+	const gates = ['cesium', 'globe', 'audio', 'model'];
+	const doneCount = gates.filter(g => loadingStatus[g]).length;
+	const hasAnyError = gates.some(g => loadingStatus.errors[g]) || loadingStatus.failed;
+
+	renderBootLines();
+
+	setStatusBox('loading-status-connection', (window.__wfsErrorCount || 0) > 0 ? 'fail' : 'ok', (window.__wfsErrorCount || 0) > 0 ? 'FAIL' : 'OK');
+	setStatusBox('loading-status-nav', loadingStatus.errors.cesium ? 'fail' : (loadingStatus.cesium ? 'ok' : 'pending'));
+	setStatusBox('loading-status-weather', loadingStatus.errors.globe ? 'fail' : (loadingStatus.globe ? 'ok' : 'pending'));
+	setStatusBox('loading-status-systems', loadingStatus.errors.audio ? 'fail' : (loadingStatus.audio ? 'ok' : 'pending'));
+	setStatusBox('loading-status-aircraft', loadingStatus.errors.model ? 'fail' : (loadingStatus.model ? 'ok' : 'pending'));
+
+	const pctEl = document.getElementById('loading-progress-pct');
+	const fillEl = document.getElementById('loading-progress-fill');
+	const pct = Math.round((doneCount / gates.length) * 100);
+	if (pctEl) pctEl.textContent = pct + '%';
+	if (fillEl) fillEl.style.width = pct + '%';
+
+	const footerEl = document.getElementById('loading-footer-text');
 
 	if (loadingStatus.failed) {
-		msg = "Loading Failed. Please Refresh.";
+		loadingText.textContent = 'LOADING FAILED - PLEASE REFRESH';
+		if (footerEl) footerEl.textContent = 'LOAD ERROR - SEE SYSTEM LOG';
+	} else if (hasAnyError) {
+		loadingText.textContent = 'LOADED WITH WARNINGS - SEE SYSTEM LOG ABOVE';
+		if (footerEl) footerEl.textContent = 'PROCEEDING WITH WARNINGS';
 	} else if (!isAllLoaded) {
-		if (!loadingStatus.audio) msg = "Loading Audio...";
-		else if (!loadingStatus.model) msg = "Loading Aircraft Model...";
-		else if (!loadingStatus.cesium) msg = "Loading Satellite Imagery...";
-		else if (!loadingStatus.globe) msg = "Loading Globe Surface...";
+		loadingText.textContent = 'PREPARING YOUR FLIGHT EXPERIENCE...';
+		if (footerEl) footerEl.textContent = 'STANDBY FOR TAKEOFF';
+	} else {
+		loadingText.textContent = 'READY';
+		if (footerEl) footerEl.textContent = 'CLEARED FOR TAKEOFF';
 	}
 
-	if (msg) {
-		loadingText.textContent = msg;
-		startBtn.disabled = true;
-		startBtn.style.pointerEvents = "none";
+	if (!isAllLoaded || hasAnyError) {
+		startBtn.disabled = !isAllLoaded;
+		startBtn.style.pointerEvents = isAllLoaded ? 'auto' : 'none';
 		loadingIndicator.classList.remove('hidden');
-
-		if (loadingStatus.failed) {
-			loadingText.style.color = "#f00";
-			const spinner = loadingIndicator.querySelector('.spinner');
-			if (spinner) {
-				spinner.style.borderColor = "rgba(255, 0, 0, 0.3)";
-				spinner.style.borderTopColor = "#f00";
-			}
-		}
 	} else {
 		loadingIndicator.classList.add('hidden');
 		startBtn.disabled = false;
-		startBtn.style.pointerEvents = "auto";
+		startBtn.style.pointerEvents = 'auto';
 	}
 }
 
@@ -7012,6 +7806,7 @@ async function initSounds() {
 	const failedSounds = soundResults.filter(r => r.status === 'rejected');
 	if (failedSounds.length > 0) {
 		console.warn(`[Web Flight Simulator] ${failedSounds.length} sound(s) failed to load - continuing anyway. Check that your /assets/sounds/ folder is present alongside index.html and that you're serving this over http(s), not file://.`, failedSounds.map(r => r.reason));
+		loadingStatus.errors.audio = `${failedSounds.length} sound(s) failed`;
 	}
 
 	loadingStatus.audio = true;
@@ -7079,6 +7874,7 @@ function initThree() {
 	try { particles.init(scene, getViewer()); } catch (e) { }
 	try { cloudField.init(scene, getViewer()); } catch (e) { }
 	try { airport.init(scene, getViewer()); } catch (e) { }
+	try { groundTerrain.init(scene, getViewer()); } catch (e) { }
 
 	initSounds().catch(err => console.error('Failed to init sounds', err));
 
@@ -7139,6 +7935,7 @@ function initThree() {
 		updateLoadingUI();
 	}, undefined, (error) => {
 		console.error('[Web Flight Simulator] Failed to load /assets/models/f-15.glb - check that your /assets folder is present alongside index.html and that you\'re serving this over http(s), not file://.', error);
+		loadingStatus.errors.model = 'aircraft model failed';
 		loadingStatus.model = true;
 		updateLoadingUI();
 	});
@@ -7268,12 +8065,14 @@ function update(dt) {
 	if (npcSystem) {
 		npcSystem.update(dt, state);
 	}
-	hud.update(state, currentState === States.FLYING ? (npcSystem ? npcSystem.npcs : []) : []);
+	hud.update(state, currentState === States.FLYING ? (npcSystem ? npcSystem.npcs : []) : [], nearbyAirports);
 
 	if (planeModel) {
 		const accel = (state.speed - prevSpeed) / dt;
 		const accelInertia = input.isDragging ? 0 : Math.max(-0.5, Math.min(1.5, accel * 0.001));
-		let targetZ = BASE_PLANE_POS.z - accelInertia;
+		const viewOffset = getActiveViewOffset();
+		if (planeModel) planeModel.visible = (CAMERA_VIEWS[cameraViewIndex] !== 'cockpit');
+		let targetZ = viewOffset.z - accelInertia;
 
 		let boostZOffset = 0;
 		if (physicsResult.isBoosting) {
@@ -7323,8 +8122,8 @@ function update(dt) {
 		const idleRotY = Math.cos(time * 0.4) * 0.015;
 		const idleRotZ = Math.sin(time * 0.7) * 0.025;
 
-		const targetX = input.isDragging ? BASE_PLANE_POS.x : BASE_PLANE_POS.x - (input.roll * 0.6) - (input.yaw * 0.12) + idleX;
-		const targetY = input.isDragging ? BASE_PLANE_POS.y : BASE_PLANE_POS.y - (input.pitch * 0.1) + idleY;
+		const targetX = input.isDragging ? viewOffset.x : viewOffset.x - (input.roll * 0.6) - (input.yaw * 0.12) + idleX;
+		const targetY = input.isDragging ? viewOffset.y : viewOffset.y - (input.pitch * 0.1) + idleY;
 
 		let targetRotZ = input.isDragging ? 0 : THREE.MathUtils.degToRad(-input.roll * 15) + idleRotZ;
 		const targetRotX = input.isDragging ? 0 : THREE.MathUtils.degToRad(input.pitch * 10) + idleRotX;
@@ -7467,6 +8266,10 @@ function animate() {
 		if (menuTimeElem) {
 			menuTimeElem.textContent = new Date().toISOString().split('.')[0] + 'Z';
 		}
+		const loadingUtcElem = document.getElementById('loading-tm-utc');
+		if (loadingUtcElem) {
+			loadingUtcElem.textContent = new Date().toISOString().substr(11, 8);
+		}
 	}
 
 	if (currentState === States.FLYING || currentState === States.PAUSED || currentState === States.TRANSITIONING) {
@@ -7497,6 +8300,7 @@ function animate() {
 			if (currentState === States.FLYING || currentState === States.PAUSED) {
 				cloudField.update(dt, state.lon, state.lat);
 				airport.update();
+				if (!HAS_ION_TOKEN) groundTerrain.update(state.lon, state.lat);
 			}
 		} catch (e) { }
 
@@ -7633,6 +8437,7 @@ function enterSpawnPicking(useVignette = true) {
 	if (npcSystem) npcSystem.clear();
 	try { cloudField.clear(); } catch (e) { }
 	try { airport.clear(); } catch (e) { }
+	try { groundTerrain.clear(); } catch (e) { }
 	stopAllFlyingSounds(0.3);
 	soundManager.play('zoom-in');
 	soundManager.play('wind', 1.0);
@@ -7946,7 +8751,27 @@ document.getElementById('confirmSpawnBtn').onclick = () => {
 				if (typeof h === 'number' && !isNaN(h)) groundAlt = h;
 			}
 			airport.spawnAt(state.lon, state.lat, groundAlt, state.heading);
-		} catch (e) { }
+			// Spawn ON the runway (ground level + small gear clearance),
+			// not high up in the sky.
+			state.alt = groundAlt + 3;
+			state.speed = 60;
+
+			// A handful of nearby airport markers for the minimap. Only the
+			// spawn airport actually has 3D runway geometry in the world -
+			// the rest are minimap-only markers (keeps this lightweight).
+			const airportNames = ['NORTH FIELD', 'EASTPOINT', 'SOUTH RIDGE', 'WESTGATE', 'HARBOR INTL'];
+			nearbyAirports = [{ lon: state.lon, lat: state.lat, name: 'DEPARTURE' }];
+			for (let i = 0; i < airportNames.length; i++) {
+				const angle = Math.random() * Math.PI * 2;
+				const dist = 15000 + Math.random() * 55000;
+				const lonOffset = (dist * Math.cos(angle)) / (111320 * Math.cos(Cesium.Math.toRadians(state.lat)));
+				const latOffset = (dist * Math.sin(angle)) / 111320;
+				nearbyAirports.push({ lon: state.lon + lonOffset, lat: state.lat + latOffset, name: airportNames[i] });
+			}
+		} catch (e) {
+			state.alt = 3;
+			state.speed = 60;
+		}
 
 		visualOffset.copy(BASE_PLANE_POS);
 		visualRotation.set(0, 0, 0);
@@ -7955,6 +8780,9 @@ document.getElementById('confirmSpawnBtn').onclick = () => {
 		lastIsBoosting = false;
 
 		controller.reset();
+		cameraViewIndex = 0;
+		const viewBtn0 = document.getElementById('touch-btn-view');
+		if (viewBtn0) viewBtn0.textContent = 'CHASE';
 		physics = new PlanePhysics();
 		physics.reset(state.lon, state.lat, state.alt, state.heading, state.pitch, state.roll);
 
@@ -8040,6 +8868,10 @@ window.addEventListener('keydown', (e) => {
 
 	if (key === 'z' && currentState === States.FLYING) {
 		if (dialogueSystem) dialogueSystem.skip();
+	}
+
+	if (key === 'c' && currentState === States.FLYING) {
+		cycleCameraView();
 	}
 });
 
