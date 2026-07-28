@@ -5306,6 +5306,99 @@ class WeaponSystem {
 	}
 }
 
+// Procedural fighter jet (no external model file needed). Used as the
+// automatic fallback whenever /assets/models/f-15.glb is missing or fails
+// to load, for both the player's plane and NPC fighters. Built in the same
+// local-axis convention as the F-15 GLTF was expected to be (forward = -Z,
+// up = +Y), so it drops into the same rotation/scale code paths unchanged.
+function buildFighterMesh() {
+	const group = new THREE.Group();
+	const bodyMat = new THREE.MeshStandardMaterial({ color: 0x6b7280, metalness: 0.4, roughness: 0.45 });
+	const darkMat = new THREE.MeshStandardMaterial({ color: 0x33383e, metalness: 0.45, roughness: 0.5 });
+	const glassMat = new THREE.MeshStandardMaterial({ color: 0x1a2530, metalness: 0.6, roughness: 0.25 });
+	const accentMat = new THREE.MeshStandardMaterial({ color: 0xb0261e, metalness: 0.2, roughness: 0.6 });
+
+	// Fuselage
+	const fuselageGeom = new THREE.CylinderGeometry(0.55, 0.75, 8.5, 12);
+	fuselageGeom.rotateX(Math.PI / 2);
+	group.add(new THREE.Mesh(fuselageGeom, bodyMat));
+
+	// Nose cone
+	const noseGeom = new THREE.ConeGeometry(0.55, 2.4, 12);
+	noseGeom.rotateX(-Math.PI / 2);
+	noseGeom.translate(0, 0, -5.6);
+	group.add(new THREE.Mesh(noseGeom, darkMat));
+
+	// Cockpit canopy
+	const canopyGeom = new THREE.SphereGeometry(0.42, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2);
+	canopyGeom.scale(1, 0.9, 1.8);
+	canopyGeom.translate(0, 0.45, -2.6);
+	group.add(new THREE.Mesh(canopyGeom, glassMat));
+
+	// Main delta wings
+	const wingShape = new THREE.Shape();
+	wingShape.moveTo(0, 0);
+	wingShape.lineTo(4.6, -2.2);
+	wingShape.lineTo(4.2, -3.2);
+	wingShape.lineTo(0.3, -1.6);
+	wingShape.closePath();
+	const wingGeom = new THREE.ExtrudeGeometry(wingShape, { depth: 0.14, bevelEnabled: false });
+	wingGeom.translate(0, -0.07, 0.4);
+
+	const wingL = new THREE.Mesh(wingGeom, bodyMat);
+	wingL.rotation.z = Math.PI / 2;
+	wingL.position.set(-0.5, -0.1, 0.4);
+	group.add(wingL);
+
+	const wingR = wingL.clone();
+	wingR.scale.x = -1;
+	wingR.position.set(0.5, -0.1, 0.4);
+	group.add(wingR);
+
+	// Twin tail fins (F-15 signature look)
+	const finGeom = new THREE.BoxGeometry(0.12, 1.5, 1.6);
+	finGeom.translate(0, 0.9, 3.6);
+	for (const side of [-1, 1]) {
+		const fin = new THREE.Mesh(finGeom, accentMat);
+		fin.position.x = side * 0.6;
+		fin.rotation.y = side * 0.12;
+		group.add(fin);
+	}
+
+	// Horizontal stabilizers
+	const stabGeom = new THREE.BoxGeometry(3.4, 0.1, 1.1);
+	stabGeom.translate(0, 0, 3.7);
+	group.add(new THREE.Mesh(stabGeom, bodyMat));
+
+	// Twin engine nozzles
+	const engineGeom = new THREE.CylinderGeometry(0.4, 0.32, 1.4, 12);
+	engineGeom.rotateX(Math.PI / 2);
+	engineGeom.translate(0, 0, 4.4);
+	for (const side of [-1, 1]) {
+		const engine = new THREE.Mesh(engineGeom, darkMat);
+		engine.position.x = side * 0.45;
+		group.add(engine);
+	}
+
+	// Intakes
+	const intakeGeom = new THREE.BoxGeometry(0.7, 0.5, 1.8);
+	intakeGeom.translate(0, -0.35, -0.8);
+	for (const side of [-1, 1]) {
+		const intake = new THREE.Mesh(intakeGeom, darkMat);
+		intake.position.x = side * 0.7;
+		group.add(intake);
+	}
+
+	group.traverse((child) => {
+		if (child.isMesh) {
+			child.castShadow = true;
+			child.receiveShadow = true;
+		}
+	});
+
+	return group;
+}
+
 // ==================== npcSystem.js ====================
 class NPCSystem {
 	constructor(viewer, scene, loader) {
@@ -5394,6 +5487,11 @@ class NPCSystem {
 					child.receiveShadow = true;
 				}
 			});
+			this.loaded = true;
+		}, undefined, (error) => {
+			console.warn('[Web Flight Simulator] /assets/models/f-15.glb not found - using a built-in procedural fighter model for NPCs instead.', error);
+			this.modelTemplate = buildFighterMesh();
+			this.animations = [];
 			this.loaded = true;
 		});
 	}
@@ -7881,9 +7979,8 @@ function initThree() {
 	initSounds().catch(err => console.error('Failed to init sounds', err));
 
 	const loader = new GLTFLoader();
-	loader.load('/assets/models/f-15.glb', (gltf) => {
-		const mesh = gltf.scene;
 
+	function setupPlaneModel(mesh, animations) {
 		planeModel = new THREE.Group();
 		planeModel.add(mesh);
 		scene.add(planeModel);
@@ -7925,7 +8022,7 @@ function initThree() {
 		});
 
 		mixer = new THREE.AnimationMixer(mesh);
-		const clip = THREE.AnimationClip.findByName(gltf.animations, 'flight_mode');
+		const clip = THREE.AnimationClip.findByName(animations, 'flight_mode');
 		if (clip) {
 			const action = mixer.clipAction(clip);
 			action.setLoop(THREE.LoopOnce);
@@ -7935,11 +8032,13 @@ function initThree() {
 
 		loadingStatus.model = true;
 		updateLoadingUI();
+	}
+
+	loader.load('/assets/models/f-15.glb', (gltf) => {
+		setupPlaneModel(gltf.scene, gltf.animations);
 	}, undefined, (error) => {
-		console.error('[Web Flight Simulator] Failed to load /assets/models/f-15.glb - check that your /assets folder is present alongside index.html and that you\'re serving this over http(s), not file://.', error);
-		loadingStatus.errors.model = 'aircraft model failed';
-		loadingStatus.model = true;
-		updateLoadingUI();
+		console.warn('[Web Flight Simulator] /assets/models/f-15.glb not found - using a built-in procedural fighter model instead. Add a real model at that path any time to replace it.', error);
+		setupPlaneModel(buildFighterMesh(), []);
 	});
 }
 
