@@ -3097,7 +3097,7 @@ import * as Cesium from 'https://cdn.jsdelivr.net/npm/cesium@1.137.0/Build/Cesiu
 // Get a free one at https://ion.cesium.com (Access Tokens tab). Without it,
 // world terrain will fail (401 INVALID_TOKEN) and the game falls back to a
 // flat ellipsoid - it still runs, it just won't have real elevation data.
-const CESIUM_ION_TOKEN = 'PASTE_YOUR_TOKEN_HERE';
+const CESIUM_ION_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkYTdlMTgyNy01MzkzLTQxYmMtYjczYi1iNmQ1Zjk5MmM5YmMiLCJpZCI6NDYxNjE5LCJpc3MiOiJodHRwczovL2FwaS5jZXNpdW0uY29tIiwiYXVkIjoidW5kZWZpbmVkX2RlZmF1bHQiLCJpYXQiOjE3ODUyODA2NDh9.WEOcliQjqh3V1j-YKmdm2AohU5ANl9xqh5Ej_j-e0CI';
 const HAS_ION_TOKEN = !!(CESIUM_ION_TOKEN && CESIUM_ION_TOKEN !== 'PASTE_YOUR_TOKEN_HERE');
 if (HAS_ION_TOKEN) {
 	Cesium.Ion.defaultAccessToken = CESIUM_ION_TOKEN;
@@ -6153,6 +6153,7 @@ function initCesium() {
 
 	_cwMiniViewer = new Cesium.Viewer("minimapCesium", {
 		terrain: null,
+		imageryProvider: _baseImagery,
 		timeline: false,
 		animation: false,
 		baseLayerPicker: false,
@@ -6175,6 +6176,7 @@ function initCesium() {
 
 	_cwPauseMiniViewer = new Cesium.Viewer("pauseMinimapCesium", {
 		terrain: null,
+		imageryProvider: _baseImagery,
 		timeline: false,
 		animation: false,
 		baseLayerPicker: false,
