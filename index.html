@@ -889,29 +889,6 @@ html {
 	font-size: 18px;
 }
 
-#game-credits {
-	position: absolute;
-	bottom: 30px;
-	left: 50%;
-	transform: translateX(-50%);
-	font-size: 12px;
-	color: rgba(0, 255, 0, 0.8);
-	text-align: center;
-	pointer-events: auto;
-	z-index: 1000;
-}
-
-#game-credits a {
-	color: rgba(0, 255, 0, 0.8);
-	text-decoration: none;
-	border-bottom: 1px solid rgba(0, 255, 0, 0.4);
-	transition: color 0.3s;
-}
-
-#game-credits a:hover {
-	color: #0f0;
-}
-
 #dialogue-container {
 	position: absolute;
 	top: 120px;
@@ -1775,44 +1752,6 @@ input[type="range"]::-webkit-slider-thumb {
 	letter-spacing: 2px;
 }
 
-.credits-body {
-	text-align: center;
-}
-
-.credits-header {
-	margin-bottom: 30px;
-}
-
-.developed-by-name {
-	font-size: 24px;
-	font-weight: bold;
-}
-
-.developed-by-name a {
-	color: #0f0;
-	text-decoration: none;
-}
-
-.credits-tech-grid {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: 20px;
-	text-align: left;
-	background: rgba(0, 255, 0, 0.05);
-	padding: 20px;
-	border: 1px solid rgba(0, 255, 0, 0.1);
-}
-
-.tech-value {
-	font-size: 14px;
-}
-
-.credits-disclaimer {
-	font-size: 11px;
-	margin-top: 20px;
-	color: rgba(0, 255, 0, 0.4);
-}
-
 .bio-avatar-container {
 	flex-shrink: 0;
 }
@@ -2527,16 +2466,6 @@ input[type="range"]::-webkit-slider-thumb {
 							<span class="btn-mid">OPERATIONS MANUAL</span>
 							<span class="btn-bot">FLIGHT CONTROLS & PROCEDURES</span>
 						</button>
-						<button id="creditsBtn" class="main-menu-btn">
-							<span class="btn-top">04</span>
-							<span class="btn-mid">CREDITS</span>
-							<span class="btn-bot">DEVELOPMENT DATA</span>
-						</button>
-						<button id="aboutBtn" class="main-menu-btn">
-							<span class="btn-top">05</span>
-							<span class="btn-mid">ABOUT DEVELOPER</span>
-							<span class="btn-bot">DEVELOPER INFORMATION</span>
-						</button>
 					</nav>
 				</div>
 
@@ -2751,65 +2680,6 @@ input[type="range"]::-webkit-slider-thumb {
 		</div>
 	</div>
 
-	<div id="creditsModal" class="modal hidden">
-		<div class="modal-header">
-			<div class="modal-title">CREDITS</div>
-			<button class="close-modal">CLOSE</button>
-		</div>
-		<div class="modal-body credits-body">
-			<div class="credits-header">
-				<div class="label-tiny">DEVELOPED BY</div>
-				<div class="developed-by-name"><a href="https://tarmizi.id" target="_blank">DIMAR TARMIZI</a></div>
-			</div>
-			<div class="credits-tech-grid">
-				<div>
-					<div class="label-tiny">ENGINE</div>
-					<div class="tech-value">CesiumJS & Three.js</div>
-				</div>
-				<div>
-					<div class="label-tiny">ASSETS</div>
-					<div class="tech-value">F-15 GLB by SIpriv</div>
-				</div>
-			</div>
-			<p class="credits-disclaimer">THIS IS A NON-COMMERCIAL WEB-BASED FLIGHT SIMULATION PROJECT.</p>
-		</div>
-	</div>
-
-	<div id="aboutBtnModal" class="modal hidden">
-		<div class="modal-header">
-			<div class="modal-title">DEVELOPER BIO</div>
-			<button class="close-modal">CLOSE</button>
-		</div>
-		<div class="modal-body">
-			<div class="bio-layout">
-				<div class="bio-avatar-container">
-					<img src="/assets/images/dimar-tarmizi.jpg" alt="Dimar Tarmizi" class="bio-avatar">
-					<div class="bio-id">ID: RYNX</div>
-				</div>
-				<div class="bio-details">
-					<div class="bio-section">
-						<div class="label-tiny">NAME</div>
-						<div class="bio-name">DIMAR TARMIZI</div>
-					</div>
-					<div class="bio-section">
-						<div class="label-tiny">SPECIFICATION</div>
-						<div class="bio-spec">FULL-STACK SOFTWARE ENGINEER</div>
-					</div>
-					<div class="bio-description">
-						Experienced in end-to-end development, deployment, and server management. Specialized in building scalable web architectures and dynamic simulation interfaces.
-					</div>
-					<div class="bio-social-links">
-						<a href="https://tarmizi.id" target="_blank" class="btn-portfolio">PORTFOLIO ACCESS</a>
-						<a href="https://github.com/dimartarmizi" target="_blank" class="btn-social">GITHUB</a>
-						<a href="https://www.facebook.com/dimartarmizi" target="_blank" class="btn-social">FACEBOOK</a>
-						<a href="https://www.instagram.com/dimartarmizi" target="_blank" class="btn-social">INSTAGRAM</a>
-						<a href="https://www.linkedin.com/in/dimartarmizi" target="_blank" class="btn-social">LINKEDIN</a>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
 	<div id="pauseMenu" class="overlay hidden">
 		<div class="pause-content">
 			<div class="pause-sidebar">
@@ -2971,11 +2841,6 @@ input[type="range"]::-webkit-slider-thumb {
 			<canvas id="minimap"></canvas>
 		</div>
 
-		<div id="game-credits">
-			WEB FLIGHT SIMULATOR | CREATED BY <a href="https://tarmizi.id" target="_blank">DIMAR TARMIZI</a> |
-			<a href="https://github.com/dimartarmizi/web-flight-simulator" target="_blank">GITHUB REPOSITORY</a>
-		</div>
-
 		<div id="dialogue-container" class="hidden">
 			<div class="dialogue-box">
 				<img id="commander-img" src="/assets/images/commander-dimar-tarmizi.jpg" alt="Commander">
@@ -3087,10 +2952,7 @@ input[type="range"]::-webkit-slider-thumb {
 // Full URL imports on purpose - this avoids relying on <script type="importmap">,
 // which only works on Safari 16.4+ / iOS 16.4+ (March 2023). Plain ES module
 // imports like these work on any Safari with basic module support (iOS 11+).
-// esm.sh resolves GLTFLoader's internal `import ... from 'three'` to the same
-// three.js version automatically, so both stay the same module instance.
 import * as THREE from 'https://esm.sh/three@0.182.0';
-import { GLTFLoader } from 'https://esm.sh/three@0.182.0/examples/jsm/loaders/GLTFLoader.js';
 import * as Cesium from 'https://cdn.jsdelivr.net/npm/cesium@1.137.0/Build/Cesium/index.js';
 
 // ==== PASTE YOUR CESIUM ION TOKEN HERE ====
@@ -3564,9 +3426,11 @@ const airport = {
 	lon: 0,
 	lat: 0,
 	alt: 0,
+	headingRad: 0,
 	_scratchMatrix: new Cesium.Matrix4(),
 	_scratchCameraMatrix: new Cesium.Matrix4(),
 	_scratchThreeMatrix: new THREE.Matrix4(),
+	_scratchRotation3: new Cesium.Matrix3(),
 
 	init(scene, viewer) {
 		this.scene = scene;
@@ -3634,7 +3498,7 @@ const airport = {
 		return tex;
 	},
 
-	spawnAt(lon, lat, groundAlt, headingDeg) {
+	spawnAt(lon, lat, groundAlt, headingDeg, skipVisual) {
 		if (!this.scene) return;
 		if (this.group) {
 			this.scene.remove(this.group);
@@ -3645,16 +3509,57 @@ const airport = {
 		this.lat = lat;
 		this.alt = groundAlt || 0;
 
+		// When we've spawned at a real-world airport and real Cesium
+		// imagery/terrain is active, that imagery already shows the actual
+		// runway - drawing our own generic strip on top of it would just
+		// misalign with the real one (wrong heading, wrong shape) and read
+		// as "two airports", one of them at a random angle. In that case we
+		// skip the visual geometry entirely and only track the coordinates
+		// for gameplay purposes (landing detection, minimap).
+		if (skipVisual) {
+			this.group = null;
+			return;
+		}
+
 		const group = new THREE.Group();
 
 		const runwayLength = 1600;
 		const runwayWidth = 45;
+		const headingRad = Cesium.Math.toRadians(headingDeg || 0);
+		const cosLat = Math.cos(Cesium.Math.toRadians(lat));
+
+		// Sample real terrain height at a point `d` meters forward (along the
+		// runway heading) and `s` meters to the side, relative to the runway
+		// origin. Used to make the runway/grass meshes hug the real terrain
+		// contour instead of sitting as a single dead-flat plane over
+		// sloped ground (which used to show up as gaps/"bumps" where real
+		// terrain rose above or dropped below the flat strip).
+		const sampleRelativeHeight = (d, s) => {
+			if (!this.viewer || !this.viewer.scene || !this.viewer.scene.globe) return 0;
+			const dx = Math.sin(headingRad) * d + Math.cos(headingRad) * s;
+			const dz = Math.cos(headingRad) * d - Math.sin(headingRad) * s;
+			const lonOffset = dx / (111320 * cosLat);
+			const latOffset = dz / 111320;
+			const cp = Cesium.Cartographic.fromDegrees(lon + lonOffset, lat + latOffset);
+			const h = this.viewer.scene.globe.getHeight(cp);
+			return (typeof h === 'number' && !isNaN(h)) ? (h - this.alt) : 0;
+		};
 
 		// Grass apron, larger than the runway with a soft radial fade at its
 		// edge so it blends into the surrounding real terrain instead of
 		// looking like a hard-edged patch dropped on top of it.
 		const grassSize = runwayLength * 1.6;
-		const grassGeom = new THREE.PlaneGeometry(grassSize, grassSize);
+		const grassSegs = 18;
+		const grassGeom = new THREE.PlaneGeometry(grassSize, grassSize, grassSegs, grassSegs);
+		{
+			const posAttr = grassGeom.attributes.position;
+			for (let i = 0; i < posAttr.count; i++) {
+				const localX = posAttr.getX(i);
+				const localY = posAttr.getY(i);
+				posAttr.setZ(i, sampleRelativeHeight(-localY, localX) + 0.15);
+			}
+			grassGeom.computeVertexNormals();
+		}
 		const grassMat = new THREE.MeshBasicMaterial({
 			color: 0x3c6b35,
 			side: THREE.DoubleSide,
@@ -3664,11 +3569,20 @@ const airport = {
 		});
 		const grass = new THREE.Mesh(grassGeom, grassMat);
 		grass.rotation.x = -Math.PI / 2;
-		grass.position.y = 0;
 		grass.renderOrder = 1;
 		group.add(grass);
 
-		const runwayGeom = new THREE.PlaneGeometry(runwayWidth, runwayLength);
+		const runwaySegs = 24;
+		const runwayGeom = new THREE.PlaneGeometry(runwayWidth, runwayLength, 1, runwaySegs);
+		{
+			const posAttr = runwayGeom.attributes.position;
+			for (let i = 0; i < posAttr.count; i++) {
+				const localX = posAttr.getX(i);
+				const localY = posAttr.getY(i);
+				posAttr.setZ(i, sampleRelativeHeight(-localY, localX) + 0.4);
+			}
+			runwayGeom.computeVertexNormals();
+		}
 		const runwayTex = this._makeRunwayTexture();
 		const runwayMat = new THREE.MeshBasicMaterial({
 			map: runwayTex,
@@ -3679,23 +3593,27 @@ const airport = {
 		});
 		const runway = new THREE.Mesh(runwayGeom, runwayMat);
 		runway.rotation.x = -Math.PI / 2;
-		runway.position.y = 1.5;
 		runway.renderOrder = 2;
 		group.add(runway);
 
 		const buildingMat = new THREE.MeshStandardMaterial({ color: 0xcccccc });
 		const towerMat = new THREE.MeshStandardMaterial({ color: 0xdddddd });
 
+		const buildingGroundOffset = sampleRelativeHeight(-runwayLength / 2 + 120, -runwayWidth / 2 - 60);
 		const hangar = new THREE.Mesh(new THREE.BoxGeometry(60, 25, 90), buildingMat);
-		hangar.position.set(-runwayWidth / 2 - 60, 12, -runwayLength / 2 + 120);
+		hangar.position.set(-runwayWidth / 2 - 60, buildingGroundOffset + 12, -runwayLength / 2 + 120);
 		group.add(hangar);
 
 		const tower = new THREE.Mesh(new THREE.BoxGeometry(20, 45, 20), towerMat);
-		tower.position.set(-runwayWidth / 2 - 60, 22, -runwayLength / 2 + 30);
+		tower.position.set(-runwayWidth / 2 - 60, buildingGroundOffset + 22, -runwayLength / 2 + 30);
 		group.add(tower);
 
-		const headingRad = Cesium.Math.toRadians(headingDeg || 0);
-		group.rotation.y = headingRad;
+		// NOTE: this group's matrix is fully overwritten every frame in
+		// update() from the Cesium ENU transform, so a rotation set here via
+		// group.rotation.y would silently be discarded (matrixAutoUpdate is
+		// off and nothing ever calls updateMatrix() before that overwrite).
+		// The heading is instead baked into the matrix directly in update().
+		this.headingRad = headingRad;
 
 		group.matrixAutoUpdate = false;
 		this.scene.add(group);
@@ -3707,6 +3625,11 @@ const airport = {
 		const viewMatrix = this.viewer.camera.viewMatrix;
 		const pos = Cesium.Cartesian3.fromDegrees(this.lon, this.lat, this.alt, undefined, new Cesium.Cartesian3());
 		const modelMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(pos, undefined, this._scratchMatrix);
+		// Rotate the ENU frame around its own up axis (Z) by the stored
+		// heading so the runway actually points the way it was spawned
+		// facing, instead of always sitting in raw east/north alignment.
+		const headingRotation = Cesium.Matrix3.fromRotationZ(-(this.headingRad || 0), this._scratchRotation3);
+		Cesium.Matrix4.multiplyByMatrix3(modelMatrix, headingRotation, modelMatrix);
 		const cameraSpaceMatrix = Cesium.Matrix4.multiply(viewMatrix, modelMatrix, this._scratchCameraMatrix);
 		for (let j = 0; j < 16; j++) this._scratchThreeMatrix.elements[j] = cameraSpaceMatrix[j];
 		this.group.matrix.copy(this._scratchThreeMatrix);
@@ -5358,11 +5281,8 @@ class WeaponSystem {
 	}
 }
 
-// Procedural fighter jet (no external model file needed). Used as the
-// automatic fallback whenever /assets/models/f-15.glb is missing or fails
-// to load, for both the player's plane and NPC fighters. Built in the same
-// local-axis convention as the F-15 GLTF was expected to be (forward = -Z,
-// up = +Y), so it drops into the same rotation/scale code paths unchanged.
+// Procedural fighter jet, built entirely in-memory - no external model file
+// is ever requested. Used for both the player's plane and NPC fighters.
 function buildFighterMesh() {
 	const group = new THREE.Group();
 	const bodyMat = new THREE.MeshStandardMaterial({ color: 0x9aa1a8, metalness: 0.55, roughness: 0.38 });
@@ -5377,12 +5297,12 @@ function buildFighterMesh() {
 		[0.66, -1.4], [0.68, 0.4], [0.64, 1.8], [0.55, 3.0],
 		[0.42, 3.9], [0.28, 4.5], [0.10, 4.85]
 	].map(([r, y]) => new THREE.Vector2(r, y));
-	const fuselageGeom = new THREE.LatheGeometry(profile, 10);
+	const fuselageGeom = new THREE.LatheGeometry(profile, 24);
 	fuselageGeom.rotateX(Math.PI / 2);
 	group.add(new THREE.Mesh(fuselageGeom, bodyMat));
 
 	// Radome (dark nose tip)
-	const radomeGeom = new THREE.ConeGeometry(0.15, 1.1, 10);
+	const radomeGeom = new THREE.ConeGeometry(0.15, 1.1, 16);
 	radomeGeom.rotateX(-Math.PI / 2);
 	radomeGeom.translate(0, 0, -6.7);
 	group.add(new THREE.Mesh(radomeGeom, darkMat));
@@ -5500,6 +5420,51 @@ function buildFighterMesh() {
 		group.add(inner);
 	}
 
+	// ---- Landing gear: strut + wheel for nose and both mains, so the jet
+	// doesn't look like it's belly-flopped on the ground when parked/taxiing ----
+	const gearGroup = new THREE.Group();
+	const strutMat = new THREE.MeshStandardMaterial({ color: 0xb8bcc2, metalness: 0.7, roughness: 0.3 });
+	const tireMat = new THREE.MeshStandardMaterial({ color: 0x161616, metalness: 0.1, roughness: 0.8 });
+	function makeGearLeg(strutLen, wheelRadius) {
+		const legGroup = new THREE.Group();
+		const strutGeom = new THREE.CylinderGeometry(0.045, 0.06, strutLen, 8);
+		const strut = new THREE.Mesh(strutGeom, strutMat);
+		strut.position.y = -strutLen / 2;
+		legGroup.add(strut);
+		const wheelGeom = new THREE.CylinderGeometry(wheelRadius, wheelRadius, wheelRadius * 0.7, 14);
+		wheelGeom.rotateX(Math.PI / 2);
+		const wheel = new THREE.Mesh(wheelGeom, tireMat);
+		wheel.position.y = -strutLen;
+		legGroup.add(wheel);
+		return legGroup;
+	}
+	const noseGear = makeGearLeg(1.15, 0.28);
+	noseGear.position.set(0, -0.55, -4.3);
+	gearGroup.add(noseGear);
+	for (const side of [-1, 1]) {
+		const mainGear = makeGearLeg(1.35, 0.34);
+		mainGear.position.set(side * 1.05, -0.55, 0.3);
+		gearGroup.add(mainGear);
+	}
+	gearGroup.name = 'landingGear';
+	group.add(gearGroup);
+
+	// ---- Navigation & beacon lights (small emissive markers - port red,
+	// starboard green, white anti-collision beacon on the spine) ----
+	const redLightMat = new THREE.MeshBasicMaterial({ color: 0xff2222 });
+	const greenLightMat = new THREE.MeshBasicMaterial({ color: 0x22ff44 });
+	const whiteLightMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+	const navLightGeom = new THREE.SphereGeometry(0.05, 8, 6);
+	const navL = new THREE.Mesh(navLightGeom, redLightMat);
+	navL.position.set(-3.5, -0.1, 1.05);
+	group.add(navL);
+	const navR = new THREE.Mesh(navLightGeom.clone(), greenLightMat);
+	navR.position.set(3.5, -0.1, 1.05);
+	group.add(navR);
+	const beacon = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 6), whiteLightMat);
+	beacon.position.set(0, 0.7, 2.9);
+	group.add(beacon);
+
 	group.traverse((child) => {
 		if (child.isMesh) {
 			child.castShadow = true;
@@ -5514,16 +5479,16 @@ function buildFighterMesh() {
 	// look like a thin stick and make its speed across the runway look
 	// wrong relative to the (correctly real-world-scaled) environment.
 	group.scale.setScalar(1.75);
+	group.userData.landingGear = gearGroup;
 
 	return group;
 }
 
 // ==================== npcSystem.js ====================
 class NPCSystem {
-	constructor(viewer, scene, loader) {
+	constructor(viewer, scene) {
 		this.viewer = viewer;
 		this.scene = scene;
-		this.loader = loader;
 		this.npcs = [];
 		this.npcNames = ['PHOENIX', 'MARVEL', 'VIPER', 'GHOST', 'RAVEN', 'EAGLE', 'FALCON', 'BLADE', 'STRIKER', 'STORM', 'KNIGHT', 'TITAN'];
 		this.lastSpawnTime = 0;
@@ -5597,22 +5562,11 @@ class NPCSystem {
 	}
 
 	loadModel() {
-		this.loader.load('/assets/models/f-15.glb', (gltf) => {
-			this.modelTemplate = gltf.scene;
-			this.animations = gltf.animations;
-			this.modelTemplate.traverse((child) => {
-				if (child.isMesh) {
-					child.castShadow = true;
-					child.receiveShadow = true;
-				}
-			});
-			this.loaded = true;
-		}, undefined, (error) => {
-			console.warn('[Web Flight Simulator] /assets/models/f-15.glb not found - using a built-in procedural fighter model for NPCs instead.', error);
-			this.modelTemplate = buildFighterMesh();
-			this.animations = [];
-			this.loaded = true;
-		});
+		// Fully procedural - built in-memory, no external model file is ever
+		// requested. Keeps everything self-contained in this one HTML file.
+		this.modelTemplate = buildFighterMesh();
+		this.animations = [];
+		this.loaded = true;
 	}
 
 	spawnNPC(playerLon, playerLat, playerAlt) {
@@ -8101,11 +8055,10 @@ function initThree() {
 
 	initSounds().catch(err => console.error('Failed to init sounds', err));
 
-	const loader = new GLTFLoader();
-
 	function setupPlaneModel(mesh, animations) {
 		planeModel = new THREE.Group();
 		planeModel.add(mesh);
+		planeModel.userData.bodyMesh = mesh;
 		scene.add(planeModel);
 
 		planeModel.layers.set(1);
@@ -8157,12 +8110,9 @@ function initThree() {
 		updateLoadingUI();
 	}
 
-	loader.load('/assets/models/f-15.glb', (gltf) => {
-		setupPlaneModel(gltf.scene, gltf.animations);
-	}, undefined, (error) => {
-		console.warn('[Web Flight Simulator] /assets/models/f-15.glb not found - using a built-in procedural fighter model instead. Add a real model at that path any time to replace it.', error);
-		setupPlaneModel(buildFighterMesh(), []);
-	});
+	// Fully procedural - built in-memory in this file, no external model
+	// file is ever requested.
+	setupPlaneModel(buildFighterMesh(), []);
 }
 
 function update(dt) {
@@ -8219,6 +8169,7 @@ function update(dt) {
 	}
 
 	checkCrash();
+	if (isGrounded) applyGroundRoll(dt, input);
 	checkGPWS();
 
 	if (soundManager.isPlaying('jet-engine')) {
@@ -8296,6 +8247,14 @@ function update(dt) {
 		const accelInertia = input.isDragging ? 0 : Math.max(-0.5, Math.min(1.5, accel * 0.001));
 		const viewOffset = getActiveViewOffset();
 		if (planeModel) planeModel.visible = (CAMERA_VIEWS[cameraViewIndex] !== 'cockpit');
+
+		const bodyMesh = planeModel.userData.bodyMesh;
+		const gear = bodyMesh && bodyMesh.userData && bodyMesh.userData.landingGear;
+		if (gear) {
+			// Down for takeoff/landing/taxi, retracted once well clear of the
+			// ground - matches how a real jet's gear cycle looks.
+			gear.visible = isGrounded || (state.alt - lastSampledTerrainHeight) < 150;
+		}
 		let targetZ = viewOffset.z - accelInertia;
 
 		let boostZOffset = 0;
@@ -8439,12 +8398,72 @@ function checkGPWS() {
 
 let lastCrashCheck = 0;
 let flightStartTime = 0;
+// True once the plane has safely touched down and is rolling on its
+// wheels, rather than mid-air. Cleared again on takeoff or on a fresh spawn.
+let isGrounded = false;
+let prevAltForVSpeed = null;
+let lastSampledTerrainHeight = 0;
+
+// How high the wheels sit above the sampled terrain/runway height when the
+// plane is considered "on the ground" (roughly matches the gear length used
+// at spawn time).
+const GEAR_CLEARANCE = 2.5;
+
+function triggerCrash() {
+	currentState = States.CRASHED;
+	if (dialogueSystem) dialogueSystem.stop();
+	uiContainer.classList.add('hidden');
+	const weaponsHud = document.getElementById('weapons-hud');
+	if (weaponsHud) weaponsHud.classList.add('hidden');
+	threeContainer.classList.add('hidden');
+	crashMenu.classList.remove('hidden');
+	hud.update(state, []);
+
+	stopAllFlyingSounds(0.1);
+	setTimeout(() => {
+		soundManager.play('explode');
+		soundManager.play('ambient-crash');
+	}, 50);
+}
+
+// Ground rollout: once safely landed, decelerate on the wheels via rolling
+// friction, level the wings/nose out, and hand control back to normal flight
+// physics once the plane has enough speed again to rotate for takeoff. Runs
+// every frame (not throttled) so the plane doesn't jitter while taxiing.
+function applyGroundRoll(dt, input) {
+	const rollingDrag = 12; // m/s^2 - similar to light braking/rolling resistance
+	physics.speed = Math.max(0, physics.speed - rollingDrag * dt);
+	state.speed = physics.speed;
+
+	const rotateSpeed = physics.minSpeed * 1.05;
+	if (state.speed >= rotateSpeed) {
+		// Enough runway speed - hand back to normal flight physics so the
+		// player can rotate and climb out.
+		isGrounded = false;
+		return;
+	}
+
+	// Below rotation speed: keep the plane level and glued to the runway
+	// instead of letting stray pitch/roll input flip it over while taxiing.
+	const levelRate = Math.max(0, 1 - dt * 3.0);
+	state.roll *= levelRate;
+	state.pitch *= levelRate;
+	physics.roll = state.roll;
+	physics.pitch = state.pitch;
+	physics.quaternion.setFromEuler(new THREE.Euler(
+		THREE.MathUtils.degToRad(state.pitch),
+		THREE.MathUtils.degToRad(state.heading),
+		THREE.MathUtils.degToRad(state.roll),
+		'YXZ'
+	));
+}
 
 function checkCrash() {
 	if (currentState !== States.FLYING) return;
 
 	const now = Date.now();
 	if (now - lastCrashCheck < 100) return;
+	const dtCheck = (now - lastCrashCheck) / 1000;
 	lastCrashCheck = now;
 
 	if (now - flightStartTime < 3000) return;
@@ -8454,23 +8473,45 @@ function checkCrash() {
 
 	const cartographic = Cesium.Cartographic.fromDegrees(state.lon, state.lat);
 	const terrainHeight = viewer.scene.globe.getHeight(cartographic);
+	if (terrainHeight === undefined) return;
+	lastSampledTerrainHeight = terrainHeight;
 
-	if (terrainHeight !== undefined && state.alt <= terrainHeight + 5) {
-		currentState = States.CRASHED;
-		if (dialogueSystem) dialogueSystem.stop();
-		uiContainer.classList.add('hidden');
-		const weaponsHud = document.getElementById('weapons-hud');
-		if (weaponsHud) weaponsHud.classList.add('hidden');
-		threeContainer.classList.add('hidden');
-		crashMenu.classList.remove('hidden');
-		hud.update(state, []);
+	const groundLevel = terrainHeight + GEAR_CLEARANCE;
 
-		stopAllFlyingSounds(0.1);
-		setTimeout(() => {
-			soundManager.play('explode');
-			soundManager.play('ambient-crash');
-		}, 50);
+	const sinkRate = (prevAltForVSpeed !== null && dtCheck > 0)
+		? Math.max(0, (prevAltForVSpeed - state.alt) / dtCheck)
+		: 0;
+	prevAltForVSpeed = state.alt;
+
+	if (state.alt > groundLevel + 1.0) {
+		// Clearly airborne - clear the grounded flag if we just took off.
+		isGrounded = false;
+		return;
 	}
+
+	if (!isGrounded) {
+		// First ground contact - this is the moment that decides whether
+		// it's a landing or a crash. Real landings tolerate some sink rate,
+		// a level-ish attitude and a sane approach speed; anything beyond
+		// that is a hard impact.
+		const hardSink = sinkRate > 8.0;                          // >~1575 ft/min - a real hard impact
+		const badBank = Math.abs(state.roll) > 20;                // wing strike risk
+		const badPitch = state.pitch < -12 || state.pitch > 18;   // nose-in or tail strike
+		const wayTooFast = state.speed > physics.maxSpeed * 0.85; // far past a safe landing speed
+
+		if (hardSink || badBank || badPitch || wayTooFast) {
+			triggerCrash();
+			return;
+		}
+
+		// Safe touchdown.
+		isGrounded = true;
+	}
+
+	// Grounded: keep the plane sitting on the ground rather than clipping
+	// through it. Speed/attitude handling while rolling happens in
+	// applyGroundRoll(), called every frame from update().
+	state.alt = groundLevel;
 }
 
 function animate() {
@@ -8569,16 +8610,6 @@ function setupModalListeners() {
 	document.getElementById('pauseHelpBtn').onclick = () => {
 		closeAllModals();
 		document.getElementById('helpModal').classList.remove('hidden');
-	};
-
-	document.getElementById('creditsBtn').onclick = () => {
-		closeAllModals();
-		document.getElementById('creditsModal').classList.remove('hidden');
-	};
-
-	document.getElementById('aboutBtn').onclick = () => {
-		closeAllModals();
-		document.getElementById('aboutBtnModal').classList.remove('hidden');
 	};
 
 
@@ -9068,7 +9099,14 @@ document.getElementById('confirmSpawnBtn').onclick = async () => {
 				}
 				if (anyValid) groundAlt = maxH + 1.5;
 			}
-			airport.spawnAt(state.lon, state.lat, groundAlt, state.heading);
+			// If we spawned at a real-world airport AND real Cesium
+			// imagery/terrain is active, let the real imagery show the
+			// runway instead of overlaying our own generic strip on top of
+			// it (which would be a different shape/heading and look like a
+			// second, misaligned airport). Only draw our procedural runway
+			// when there's no real airport data to conflict with.
+			const useRealAirportImagery = HAS_ION_TOKEN && !!currentAirportName;
+			airport.spawnAt(state.lon, state.lat, groundAlt, state.heading, useRealAirportImagery);
 			// Spawn ON the runway (ground level + small gear clearance),
 			// not high up in the sky.
 			state.alt = groundAlt + 3;
@@ -9133,6 +9171,8 @@ document.getElementById('confirmSpawnBtn').onclick = async () => {
 			easingFunction: Cesium.EasingFunction.QUADRATIC_IN_OUT,
 			complete: () => {
 				flightStartTime = Date.now();
+				isGrounded = false;
+				prevAltForVSpeed = null;
 				uiContainer.classList.remove('hidden');
 				const weaponsHud = document.getElementById('weapons-hud');
 				if (weaponsHud) weaponsHud.classList.remove('hidden');
@@ -9296,7 +9336,7 @@ initialCameraView = {
 };
 
 initThree();
-npcSystem = new NPCSystem(viewer, scene, new GLTFLoader());
+npcSystem = new NPCSystem(viewer, scene);
 setupSpawnPicker();
 setupLocationSearch();
 loadSettings();
