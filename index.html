@@ -5313,80 +5313,139 @@ class WeaponSystem {
 // up = +Y), so it drops into the same rotation/scale code paths unchanged.
 function buildFighterMesh() {
 	const group = new THREE.Group();
-	const bodyMat = new THREE.MeshStandardMaterial({ color: 0x6b7280, metalness: 0.4, roughness: 0.45 });
-	const darkMat = new THREE.MeshStandardMaterial({ color: 0x33383e, metalness: 0.45, roughness: 0.5 });
-	const glassMat = new THREE.MeshStandardMaterial({ color: 0x1a2530, metalness: 0.6, roughness: 0.25 });
-	const accentMat = new THREE.MeshStandardMaterial({ color: 0xb0261e, metalness: 0.2, roughness: 0.6 });
+	const bodyMat = new THREE.MeshStandardMaterial({ color: 0x9aa1a8, metalness: 0.55, roughness: 0.38 });
+	const darkMat = new THREE.MeshStandardMaterial({ color: 0x2b2f34, metalness: 0.5, roughness: 0.5 });
+	const glassMat = new THREE.MeshStandardMaterial({ color: 0x141c26, metalness: 0.7, roughness: 0.15 });
+	const accentMat = new THREE.MeshStandardMaterial({ color: 0xa4231c, metalness: 0.15, roughness: 0.6 });
+	const nozzleMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1c, metalness: 0.8, roughness: 0.35 });
 
-	// Fuselage
-	const fuselageGeom = new THREE.CylinderGeometry(0.55, 0.75, 8.5, 12);
+	// ---- Fuselage: revolved profile (thin nose -> wide midsection -> tapered tail) ----
+	const profile = [
+		[0.04, -6.4], [0.22, -5.6], [0.42, -4.6], [0.58, -3.2],
+		[0.66, -1.4], [0.68, 0.4], [0.64, 1.8], [0.55, 3.0],
+		[0.42, 3.9], [0.28, 4.5], [0.10, 4.85]
+	].map(([r, y]) => new THREE.Vector2(r, y));
+	const fuselageGeom = new THREE.LatheGeometry(profile, 10);
 	fuselageGeom.rotateX(Math.PI / 2);
 	group.add(new THREE.Mesh(fuselageGeom, bodyMat));
 
-	// Nose cone
-	const noseGeom = new THREE.ConeGeometry(0.55, 2.4, 12);
-	noseGeom.rotateX(-Math.PI / 2);
-	noseGeom.translate(0, 0, -5.6);
-	group.add(new THREE.Mesh(noseGeom, darkMat));
+	// Radome (dark nose tip)
+	const radomeGeom = new THREE.ConeGeometry(0.15, 1.1, 10);
+	radomeGeom.rotateX(-Math.PI / 2);
+	radomeGeom.translate(0, 0, -6.7);
+	group.add(new THREE.Mesh(radomeGeom, darkMat));
 
-	// Cockpit canopy
-	const canopyGeom = new THREE.SphereGeometry(0.42, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2);
-	canopyGeom.scale(1, 0.9, 1.8);
-	canopyGeom.translate(0, 0.45, -2.6);
+	// Cockpit canopy (raised bubble greenhouse, offset back from the radome)
+	const canopyGeom = new THREE.SphereGeometry(0.46, 14, 10, 0, Math.PI * 2, 0, Math.PI / 1.9);
+	canopyGeom.scale(1, 0.85, 2.1);
+	canopyGeom.translate(0, 0.48, -3.4);
 	group.add(new THREE.Mesh(canopyGeom, glassMat));
+	const canopyFrameGeom = new THREE.BoxGeometry(0.85, 0.08, 2.3);
+	canopyFrameGeom.translate(0, 0.32, -3.4);
+	group.add(new THREE.Mesh(canopyFrameGeom, darkMat));
 
-	// Main delta wings
-	const wingShape = new THREE.Shape();
-	wingShape.moveTo(0, 0);
-	wingShape.lineTo(4.6, -2.2);
-	wingShape.lineTo(4.2, -3.2);
-	wingShape.lineTo(0.3, -1.6);
-	wingShape.closePath();
-	const wingGeom = new THREE.ExtrudeGeometry(wingShape, { depth: 0.14, bevelEnabled: false });
-	wingGeom.translate(0, -0.07, 0.4);
+	// ---- Rectangular twin intakes (F-15 signature), slightly forward-canted ----
+	for (const side of [-1, 1]) {
+		const intakeGeom = new THREE.BoxGeometry(0.85, 0.62, 2.6);
+		const intake = new THREE.Mesh(intakeGeom, darkMat);
+		intake.position.set(side * 0.95, -0.32, -1.0);
+		intake.rotation.y = side * 0.05;
+		group.add(intake);
 
+		const lipGeom = new THREE.BoxGeometry(0.9, 0.66, 0.12);
+		const lip = new THREE.Mesh(lipGeom, bodyMat);
+		lip.position.set(side * 0.95, -0.32, -2.28);
+		group.add(lip);
+	}
+
+	// ---- Main wings: swept trapezoid with a clipped tip ----
+	function makeWingGeometry() {
+		const shape = new THREE.Shape();
+		shape.moveTo(0, 0);
+		shape.lineTo(5.1, -2.0);
+		shape.lineTo(4.9, -2.9);
+		shape.lineTo(3.6, -2.85);
+		shape.lineTo(0.25, -1.5);
+		shape.closePath();
+		const geom = new THREE.ExtrudeGeometry(shape, { depth: 0.12, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02, bevelSegments: 1 });
+		geom.translate(0, -0.06, 0.2);
+		geom.rotateZ(Math.PI / 2);
+		return geom;
+	}
+	const wingGeom = makeWingGeometry();
 	const wingL = new THREE.Mesh(wingGeom, bodyMat);
-	wingL.rotation.z = Math.PI / 2;
-	wingL.position.set(-0.5, -0.1, 0.4);
+	wingL.position.set(-0.55, -0.15, 0.7);
 	group.add(wingL);
-
-	const wingR = wingL.clone();
+	const wingR = new THREE.Mesh(wingGeom.clone(), bodyMat);
 	wingR.scale.x = -1;
-	wingR.position.set(0.5, -0.1, 0.4);
+	wingR.position.set(0.55, -0.15, 0.7);
 	group.add(wingR);
 
-	// Twin tail fins (F-15 signature look)
-	const finGeom = new THREE.BoxGeometry(0.12, 1.5, 1.6);
-	finGeom.translate(0, 0.9, 3.6);
+	// Wingtip pylons + fuel tanks (visual detail, matches the game's weapon-pylon theme)
 	for (const side of [-1, 1]) {
+		const tankGeom = new THREE.CapsuleGeometry(0.14, 2.4, 4, 8);
+		tankGeom.rotateX(Math.PI / 2);
+		const tank = new THREE.Mesh(tankGeom, bodyMat);
+		tank.position.set(side * 4.3, -0.55, 0.6);
+		group.add(tank);
+	}
+
+	// ---- Twin tail booms + outward-canted vertical fins ----
+	for (const side of [-1, 1]) {
+		const boomGeom = new THREE.CylinderGeometry(0.22, 0.14, 3.4, 8);
+		boomGeom.rotateX(Math.PI / 2);
+		boomGeom.translate(0, 0, 3.4);
+		const boom = new THREE.Mesh(boomGeom, bodyMat);
+		boom.position.x = side * 0.75;
+		group.add(boom);
+
+		const finShape = new THREE.Shape();
+		finShape.moveTo(0, 0);
+		finShape.lineTo(0.15, 1.75);
+		finShape.lineTo(1.05, 1.65);
+		finShape.lineTo(1.5, 0.1);
+		finShape.closePath();
+		const finGeom = new THREE.ExtrudeGeometry(finShape, { depth: 0.1, bevelEnabled: false });
+		finGeom.translate(-0.5, 0, 2.9);
 		const fin = new THREE.Mesh(finGeom, accentMat);
-		fin.position.x = side * 0.6;
-		fin.rotation.y = side * 0.12;
+		fin.position.x = side * 0.75;
+		fin.rotation.y = Math.PI / 2;
+		fin.rotation.x = side * -0.1;
 		group.add(fin);
 	}
 
-	// Horizontal stabilizers
-	const stabGeom = new THREE.BoxGeometry(3.4, 0.1, 1.1);
-	stabGeom.translate(0, 0, 3.7);
-	group.add(new THREE.Mesh(stabGeom, bodyMat));
+	// Horizontal all-moving stabilizers
+	const stabShape = new THREE.Shape();
+	stabShape.moveTo(0, 0);
+	stabShape.lineTo(1.7, -0.7);
+	stabShape.lineTo(1.55, -1.15);
+	stabShape.lineTo(0.15, -0.6);
+	stabShape.closePath();
+	const stabGeom = new THREE.ExtrudeGeometry(stabShape, { depth: 0.1, bevelEnabled: false });
+	stabGeom.translate(0, -0.05, 3.55);
+	const stabL = new THREE.Mesh(stabGeom, bodyMat);
+	stabL.position.x = -0.3;
+	group.add(stabL);
+	const stabR = new THREE.Mesh(stabGeom.clone(), bodyMat);
+	stabR.scale.x = -1;
+	stabR.position.x = 0.3;
+	group.add(stabR);
 
-	// Twin engine nozzles
-	const engineGeom = new THREE.CylinderGeometry(0.4, 0.32, 1.4, 12);
-	engineGeom.rotateX(Math.PI / 2);
-	engineGeom.translate(0, 0, 4.4);
+	// Twin convergent engine nozzles
 	for (const side of [-1, 1]) {
-		const engine = new THREE.Mesh(engineGeom, darkMat);
-		engine.position.x = side * 0.45;
-		group.add(engine);
-	}
+		const nozzleGeom = new THREE.CylinderGeometry(0.42, 0.32, 1.2, 12);
+		nozzleGeom.rotateX(Math.PI / 2);
+		nozzleGeom.translate(0, 0, 5.1);
+		const nozzle = new THREE.Mesh(nozzleGeom, nozzleMat);
+		nozzle.position.x = side * 0.75;
+		group.add(nozzle);
 
-	// Intakes
-	const intakeGeom = new THREE.BoxGeometry(0.7, 0.5, 1.8);
-	intakeGeom.translate(0, -0.35, -0.8);
-	for (const side of [-1, 1]) {
-		const intake = new THREE.Mesh(intakeGeom, darkMat);
-		intake.position.x = side * 0.7;
-		group.add(intake);
+		const innerGeom = new THREE.CylinderGeometry(0.22, 0.22, 0.3, 10);
+		innerGeom.rotateX(Math.PI / 2);
+		innerGeom.translate(0, 0, 5.72);
+		const inner = new THREE.Mesh(innerGeom, darkMat);
+		inner.position.x = side * 0.75;
+		group.add(inner);
 	}
 
 	group.traverse((child) => {
