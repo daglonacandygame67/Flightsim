@@ -4,16 +4,14 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 	<title>Web Flight Simulator</title>
-	<link rel="icon" type="image/x-icon" href="/favicon.ico">
 
 	<!-- Cesium widgets CSS via jsDelivr (Cesium itself is imported directly by full URL in the module script below) -->
 	<link href="https://cdn.jsdelivr.net/npm/cesium@1.137.0/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
 
 	<style>
-@font-face {
-	font-family: 'AceCombat';
-	src: url('/assets/fonts/ACES07_Regular.ttf') format('truetype');
-}
+/* Custom 'AceCombat' font removed - this project is a single self-contained
+   HTML file with no external asset files, so the font stack below just
+   falls back to Courier New (a universal web-safe monospace font). */
 
 body,
 html,
@@ -889,6 +887,29 @@ html {
 	font-size: 18px;
 }
 
+#game-credits {
+	position: absolute;
+	bottom: 30px;
+	left: 50%;
+	transform: translateX(-50%);
+	font-size: 12px;
+	color: rgba(0, 255, 0, 0.8);
+	text-align: center;
+	pointer-events: auto;
+	z-index: 1000;
+}
+
+#game-credits a {
+	color: rgba(0, 255, 0, 0.8);
+	text-decoration: none;
+	border-bottom: 1px solid rgba(0, 255, 0, 0.4);
+	transition: color 0.3s;
+}
+
+#game-credits a:hover {
+	color: #0f0;
+}
+
 #dialogue-container {
 	position: absolute;
 	top: 120px;
@@ -1702,11 +1723,12 @@ input[type="range"]::-webkit-slider-thumb {
 	box-shadow: 0 0 15px rgba(0, 255, 0, 0.25);
 }
 
-#aircraft-icon img {
+#aircraft-icon svg {
 	width: auto;
 	height: calc(100% - 20px);
 	max-width: 100%;
-	filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%) drop-shadow(0 0 8px rgba(0, 255, 0, 0.6));
+	color: #0f0;
+	filter: drop-shadow(0 0 8px rgba(0, 255, 0, 0.6));
 }
 
 #aircraft-label {
@@ -1750,6 +1772,44 @@ input[type="range"]::-webkit-slider-thumb {
 	font-size: 10px;
 	color: rgba(0, 255, 0, 0.5);
 	letter-spacing: 2px;
+}
+
+.credits-body {
+	text-align: center;
+}
+
+.credits-header {
+	margin-bottom: 30px;
+}
+
+.developed-by-name {
+	font-size: 24px;
+	font-weight: bold;
+}
+
+.developed-by-name a {
+	color: #0f0;
+	text-decoration: none;
+}
+
+.credits-tech-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 20px;
+	text-align: left;
+	background: rgba(0, 255, 0, 0.05);
+	padding: 20px;
+	border: 1px solid rgba(0, 255, 0, 0.1);
+}
+
+.tech-value {
+	font-size: 14px;
+}
+
+.credits-disclaimer {
+	font-size: 11px;
+	margin-top: 20px;
+	color: rgba(0, 255, 0, 0.4);
 }
 
 .bio-avatar-container {
@@ -2429,6 +2489,16 @@ input[type="range"]::-webkit-slider-thumb {
 	.loading-center { margin-top: 1vh; }
 }
 
+.touch-brake-btn {
+	border-color: rgba(255, 90, 90, 0.7);
+	color: #ff8080;
+	text-shadow: 0 0 6px rgba(255, 60, 60, 0.6);
+}
+
+.touch-brake-btn.touch-active {
+	background: rgba(255, 60, 60, 0.35);
+}
+
 	</style>
 </head>
 
@@ -2465,6 +2535,16 @@ input[type="range"]::-webkit-slider-thumb {
 							<span class="btn-top">03</span>
 							<span class="btn-mid">OPERATIONS MANUAL</span>
 							<span class="btn-bot">FLIGHT CONTROLS & PROCEDURES</span>
+						</button>
+						<button id="creditsBtn" class="main-menu-btn">
+							<span class="btn-top">04</span>
+							<span class="btn-mid">CREDITS</span>
+							<span class="btn-bot">DEVELOPMENT DATA</span>
+						</button>
+						<button id="aboutBtn" class="main-menu-btn">
+							<span class="btn-top">05</span>
+							<span class="btn-mid">ABOUT DEVELOPER</span>
+							<span class="btn-bot">DEVELOPER INFORMATION</span>
 						</button>
 					</nav>
 				</div>
@@ -2658,6 +2738,8 @@ input[type="range"]::-webkit-slider-thumb {
 				<div>Throttle +/-</div>
 				<div class="key">SPACE</div>
 				<div>Afterburner (Boost)</div>
+				<div class="key">B</div>
+				<div>Wheel Brake</div>
 			</div>
 			<h3>COMBAT SYSTEMS</h3>
 			<div class="control-grid">
@@ -2676,6 +2758,65 @@ input[type="range"]::-webkit-slider-thumb {
 				<div>Cycle Camera View (Chase / Cockpit / Orbit)</div>
 				<div class="key">ESC / P</div>
 				<div>Pause / Tactical Menu</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="creditsModal" class="modal hidden">
+		<div class="modal-header">
+			<div class="modal-title">CREDITS</div>
+			<button class="close-modal">CLOSE</button>
+		</div>
+		<div class="modal-body credits-body">
+			<div class="credits-header">
+				<div class="label-tiny">DEVELOPED BY</div>
+				<div class="developed-by-name"><a href="https://tarmizi.id" target="_blank">DIMAR TARMIZI</a></div>
+			</div>
+			<div class="credits-tech-grid">
+				<div>
+					<div class="label-tiny">ENGINE</div>
+					<div class="tech-value">CesiumJS & Three.js</div>
+				</div>
+				<div>
+					<div class="label-tiny">ASSETS</div>
+					<div class="tech-value">F-15 GLB by SIpriv</div>
+				</div>
+			</div>
+			<p class="credits-disclaimer">THIS IS A NON-COMMERCIAL WEB-BASED FLIGHT SIMULATION PROJECT.</p>
+		</div>
+	</div>
+
+	<div id="aboutBtnModal" class="modal hidden">
+		<div class="modal-header">
+			<div class="modal-title">DEVELOPER BIO</div>
+			<button class="close-modal">CLOSE</button>
+		</div>
+		<div class="modal-body">
+			<div class="bio-layout">
+				<div class="bio-avatar-container">
+					<svg class="bio-avatar" viewBox="0 0 100 100" width="100" height="100"><circle cx="50" cy="50" r="49" fill="rgba(0,40,0,0.5)" stroke="currentColor" stroke-width="1.5" /><circle cx="50" cy="40" r="18" fill="none" stroke="currentColor" stroke-width="1.5" /><path d="M20 88 Q50 58 80 88" fill="none" stroke="currentColor" stroke-width="1.5" /></svg>
+					<div class="bio-id">ID: RYNX</div>
+				</div>
+				<div class="bio-details">
+					<div class="bio-section">
+						<div class="label-tiny">NAME</div>
+						<div class="bio-name">DIMAR TARMIZI</div>
+					</div>
+					<div class="bio-section">
+						<div class="label-tiny">SPECIFICATION</div>
+						<div class="bio-spec">FULL-STACK SOFTWARE ENGINEER</div>
+					</div>
+					<div class="bio-description">
+						Experienced in end-to-end development, deployment, and server management. Specialized in building scalable web architectures and dynamic simulation interfaces.
+					</div>
+					<div class="bio-social-links">
+						<a href="https://tarmizi.id" target="_blank" class="btn-portfolio">PORTFOLIO ACCESS</a>
+						<a href="https://github.com/dimartarmizi" target="_blank" class="btn-social">GITHUB</a>
+						<a href="https://www.facebook.com/dimartarmizi" target="_blank" class="btn-social">FACEBOOK</a>
+						<a href="https://www.instagram.com/dimartarmizi" target="_blank" class="btn-social">INSTAGRAM</a>
+						<a href="https://www.linkedin.com/in/dimartarmizi" target="_blank" class="btn-social">LINKEDIN</a>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -2831,7 +2972,7 @@ input[type="range"]::-webkit-slider-thumb {
 				</div>
 			</div>
 			<div id="aircraft-icon">
-				<img src="/assets/images/f-15.svg" alt="F-15 Icon">
+				<svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M12 2 L14 9 L22 13 L22 15 L14 13 L14 18 L18 21 L18 22.5 L12 21 L6 22.5 L6 21 L10 18 L10 13 L2 15 L2 13 L10 9 Z" /></svg>
 				<div id="aircraft-label">F-15</div>
 			</div>
 		</div>
@@ -2841,9 +2982,14 @@ input[type="range"]::-webkit-slider-thumb {
 			<canvas id="minimap"></canvas>
 		</div>
 
+		<div id="game-credits">
+			WEB FLIGHT SIMULATOR | CREATED BY <a href="https://tarmizi.id" target="_blank">DIMAR TARMIZI</a> |
+			<a href="https://github.com/dimartarmizi/web-flight-simulator" target="_blank">GITHUB REPOSITORY</a>
+		</div>
+
 		<div id="dialogue-container" class="hidden">
 			<div class="dialogue-box">
-				<img id="commander-img" src="/assets/images/commander-dimar-tarmizi.jpg" alt="Commander">
+				<svg id="commander-img" viewBox="0 0 100 100"><circle cx="50" cy="50" r="49" fill="rgba(0,40,0,0.5)" stroke="currentColor" stroke-width="1.5" /><circle cx="50" cy="40" r="18" fill="none" stroke="currentColor" stroke-width="1.5" /><path d="M20 88 Q50 58 80 88" fill="none" stroke="currentColor" stroke-width="1.5" /></svg>
 				<div class="dialogue-content">
 					<div class="commander-name">COMMANDER DIMAR TARMIZI</div>
 					<div id="dialogue-text"></div>
@@ -2877,6 +3023,7 @@ input[type="range"]::-webkit-slider-thumb {
 				<button id="touch-btn-weapon" class="touch-btn touch-action-btn">WPN</button>
 				<button id="touch-btn-flare" class="touch-btn touch-action-btn">FLARE</button>
 				<button id="touch-btn-boost" class="touch-btn touch-action-btn touch-boost-btn">BOOST</button>
+				<button id="touch-btn-brake" class="touch-btn touch-action-btn touch-brake-btn">BRK</button>
 				<button id="touch-btn-fire" class="touch-btn touch-fire-btn">FIRE</button>
 			</div>
 
@@ -2952,6 +3099,7 @@ input[type="range"]::-webkit-slider-thumb {
 // Full URL imports on purpose - this avoids relying on <script type="importmap">,
 // which only works on Safari 16.4+ / iOS 16.4+ (March 2023). Plain ES module
 // imports like these work on any Safari with basic module support (iOS 11+).
+// esm.sh resolves nested bare imports to the same three.js version automatically.
 import * as THREE from 'https://esm.sh/three@0.182.0';
 import * as Cesium from 'https://cdn.jsdelivr.net/npm/cesium@1.137.0/Build/Cesium/index.js';
 
@@ -2959,7 +3107,7 @@ import * as Cesium from 'https://cdn.jsdelivr.net/npm/cesium@1.137.0/Build/Cesiu
 // Get a free one at https://ion.cesium.com (Access Tokens tab). Without it,
 // world terrain will fail (401 INVALID_TOKEN) and the game falls back to a
 // flat ellipsoid - it still runs, it just won't have real elevation data.
-const CESIUM_ION_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkYTdlMTgyNy01MzkzLTQxYmMtYjczYi1iNmQ1Zjk5MmM5YmMiLCJpZCI6NDYxNjE5LCJpc3MiOiJodHRwczovL2FwaS5jZXNpdW0uY29tIiwiYXVkIjoidW5kZWZpbmVkX2RlZmF1bHQiLCJpYXQiOjE3ODUyODA2NDh9.WEOcliQjqh3V1j-YKmdm2AohU5ANl9xqh5Ej_j-e0CI';
+const CESIUM_ION_TOKEN = 'PASTE_YOUR_TOKEN_HERE';
 const HAS_ION_TOKEN = !!(CESIUM_ION_TOKEN && CESIUM_ION_TOKEN !== 'PASTE_YOUR_TOKEN_HERE');
 if (HAS_ION_TOKEN) {
 	Cesium.Ion.defaultAccessToken = CESIUM_ION_TOKEN;
@@ -3426,11 +3574,9 @@ const airport = {
 	lon: 0,
 	lat: 0,
 	alt: 0,
-	headingRad: 0,
 	_scratchMatrix: new Cesium.Matrix4(),
 	_scratchCameraMatrix: new Cesium.Matrix4(),
 	_scratchThreeMatrix: new THREE.Matrix4(),
-	_scratchRotation3: new Cesium.Matrix3(),
 
 	init(scene, viewer) {
 		this.scene = scene;
@@ -3442,40 +3588,22 @@ const airport = {
 		const canvas = document.createElement('canvas');
 		canvas.width = w; canvas.height = h;
 		const ctx = canvas.getContext('2d');
-		ctx.fillStyle = '#1c1c1e';
+		ctx.fillStyle = '#2b2b2e';
 		ctx.fillRect(0, 0, w, h);
-
-		// Solid white edge lines along both long sides - real runways have
-		// these, and they make the strip read clearly against any terrain.
-		ctx.fillStyle = '#ffffff';
-		ctx.fillRect(6, 0, 5, h);
-		ctx.fillRect(w - 11, 0, 5, h);
-
-		ctx.strokeStyle = '#ffffff';
-		ctx.lineWidth = 8;
-		ctx.setLineDash([30, 20]);
+		ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+		ctx.lineWidth = 6;
+		ctx.setLineDash([28, 22]);
 		ctx.beginPath();
 		ctx.moveTo(w / 2, 0);
 		ctx.lineTo(w / 2, h);
 		ctx.stroke();
 		ctx.setLineDash([]);
-
-		ctx.fillStyle = '#ffffff';
+		ctx.fillStyle = 'rgba(255,255,255,0.8)';
 		for (let side = -1; side <= 1; side += 2) {
 			for (let y = 20; y < h - 20; y += 46) {
 				ctx.fillRect(w / 2 + side * 26 - 5, y, 10, 26);
 			}
 		}
-
-		// Threshold markings (bright stripes at both ends) so the runway
-		// ends are unmistakable even from a distance.
-		ctx.fillStyle = '#ffffff';
-		for (const yStart of [12, h - 12 - 60]) {
-			for (let i = 0; i < 5; i++) {
-				ctx.fillRect(16 + i * 20, yStart, 12, 60);
-			}
-		}
-
 		const tex = new THREE.CanvasTexture(canvas);
 		tex.wrapS = THREE.ClampToEdgeWrapping;
 		tex.wrapT = THREE.RepeatWrapping;
@@ -3483,22 +3611,7 @@ const airport = {
 		return tex;
 	},
 
-	_makeGrassFadeTexture() {
-		const size = 256;
-		const canvas = document.createElement('canvas');
-		canvas.width = size; canvas.height = size;
-		const ctx = canvas.getContext('2d');
-		const cx = size / 2, cy = size / 2;
-		const grad = ctx.createRadialGradient(cx, cy, size * 0.28, cx, cy, size * 0.5);
-		grad.addColorStop(0, 'rgba(255,255,255,1)');
-		grad.addColorStop(1, 'rgba(255,255,255,0)');
-		ctx.fillStyle = grad;
-		ctx.fillRect(0, 0, size, size);
-		const tex = new THREE.CanvasTexture(canvas);
-		return tex;
-	},
-
-	spawnAt(lon, lat, groundAlt, headingDeg, skipVisual) {
+	spawnAt(lon, lat, groundAlt, headingDeg) {
 		if (!this.scene) return;
 		if (this.group) {
 			this.scene.remove(this.group);
@@ -3509,111 +3622,38 @@ const airport = {
 		this.lat = lat;
 		this.alt = groundAlt || 0;
 
-		// When we've spawned at a real-world airport and real Cesium
-		// imagery/terrain is active, that imagery already shows the actual
-		// runway - drawing our own generic strip on top of it would just
-		// misalign with the real one (wrong heading, wrong shape) and read
-		// as "two airports", one of them at a random angle. In that case we
-		// skip the visual geometry entirely and only track the coordinates
-		// for gameplay purposes (landing detection, minimap).
-		if (skipVisual) {
-			this.group = null;
-			return;
-		}
-
 		const group = new THREE.Group();
 
 		const runwayLength = 1600;
 		const runwayWidth = 45;
-		const headingRad = Cesium.Math.toRadians(headingDeg || 0);
-		const cosLat = Math.cos(Cesium.Math.toRadians(lat));
-
-		// Sample real terrain height at a point `d` meters forward (along the
-		// runway heading) and `s` meters to the side, relative to the runway
-		// origin. Used to make the runway/grass meshes hug the real terrain
-		// contour instead of sitting as a single dead-flat plane over
-		// sloped ground (which used to show up as gaps/"bumps" where real
-		// terrain rose above or dropped below the flat strip).
-		const sampleRelativeHeight = (d, s) => {
-			if (!this.viewer || !this.viewer.scene || !this.viewer.scene.globe) return 0;
-			const dx = Math.sin(headingRad) * d + Math.cos(headingRad) * s;
-			const dz = Math.cos(headingRad) * d - Math.sin(headingRad) * s;
-			const lonOffset = dx / (111320 * cosLat);
-			const latOffset = dz / 111320;
-			const cp = Cesium.Cartographic.fromDegrees(lon + lonOffset, lat + latOffset);
-			const h = this.viewer.scene.globe.getHeight(cp);
-			return (typeof h === 'number' && !isNaN(h)) ? (h - this.alt) : 0;
-		};
-
-		// Grass apron, larger than the runway with a soft radial fade at its
-		// edge so it blends into the surrounding real terrain instead of
-		// looking like a hard-edged patch dropped on top of it.
-		const grassSize = runwayLength * 1.6;
-		const grassSegs = 18;
-		const grassGeom = new THREE.PlaneGeometry(grassSize, grassSize, grassSegs, grassSegs);
-		{
-			const posAttr = grassGeom.attributes.position;
-			for (let i = 0; i < posAttr.count; i++) {
-				const localX = posAttr.getX(i);
-				const localY = posAttr.getY(i);
-				posAttr.setZ(i, sampleRelativeHeight(-localY, localX) + 0.15);
-			}
-			grassGeom.computeVertexNormals();
-		}
-		const grassMat = new THREE.MeshBasicMaterial({
-			color: 0x3c6b35,
-			side: THREE.DoubleSide,
-			map: this._makeGrassFadeTexture(),
-			transparent: true,
-			depthWrite: false
-		});
-		const grass = new THREE.Mesh(grassGeom, grassMat);
-		grass.rotation.x = -Math.PI / 2;
-		grass.renderOrder = 1;
-		group.add(grass);
-
-		const runwaySegs = 24;
-		const runwayGeom = new THREE.PlaneGeometry(runwayWidth, runwayLength, 1, runwaySegs);
-		{
-			const posAttr = runwayGeom.attributes.position;
-			for (let i = 0; i < posAttr.count; i++) {
-				const localX = posAttr.getX(i);
-				const localY = posAttr.getY(i);
-				posAttr.setZ(i, sampleRelativeHeight(-localY, localX) + 0.4);
-			}
-			runwayGeom.computeVertexNormals();
-		}
+		const runwayGeom = new THREE.PlaneGeometry(runwayWidth, runwayLength);
 		const runwayTex = this._makeRunwayTexture();
-		const runwayMat = new THREE.MeshBasicMaterial({
-			map: runwayTex,
-			side: THREE.DoubleSide,
-			polygonOffset: true,
-			polygonOffsetFactor: -4,
-			polygonOffsetUnits: -4
-		});
+		const runwayMat = new THREE.MeshBasicMaterial({ map: runwayTex, side: THREE.DoubleSide });
 		const runway = new THREE.Mesh(runwayGeom, runwayMat);
 		runway.rotation.x = -Math.PI / 2;
-		runway.renderOrder = 2;
+		runway.position.y = 0.5;
 		group.add(runway);
+
+		const grassGeom = new THREE.PlaneGeometry(runwayLength * 1.3, runwayLength * 1.3);
+		const grassMat = new THREE.MeshBasicMaterial({ color: 0x3c6b35, side: THREE.DoubleSide });
+		const grass = new THREE.Mesh(grassGeom, grassMat);
+		grass.rotation.x = -Math.PI / 2;
+		grass.position.y = 0;
+		group.add(grass);
 
 		const buildingMat = new THREE.MeshStandardMaterial({ color: 0xcccccc });
 		const towerMat = new THREE.MeshStandardMaterial({ color: 0xdddddd });
 
-		const buildingGroundOffset = sampleRelativeHeight(-runwayLength / 2 + 120, -runwayWidth / 2 - 60);
 		const hangar = new THREE.Mesh(new THREE.BoxGeometry(60, 25, 90), buildingMat);
-		hangar.position.set(-runwayWidth / 2 - 60, buildingGroundOffset + 12, -runwayLength / 2 + 120);
+		hangar.position.set(-runwayWidth / 2 - 60, 12, -runwayLength / 2 + 120);
 		group.add(hangar);
 
 		const tower = new THREE.Mesh(new THREE.BoxGeometry(20, 45, 20), towerMat);
-		tower.position.set(-runwayWidth / 2 - 60, buildingGroundOffset + 22, -runwayLength / 2 + 30);
+		tower.position.set(-runwayWidth / 2 - 60, 22, -runwayLength / 2 + 30);
 		group.add(tower);
 
-		// NOTE: this group's matrix is fully overwritten every frame in
-		// update() from the Cesium ENU transform, so a rotation set here via
-		// group.rotation.y would silently be discarded (matrixAutoUpdate is
-		// off and nothing ever calls updateMatrix() before that overwrite).
-		// The heading is instead baked into the matrix directly in update().
-		this.headingRad = headingRad;
+		const headingRad = Cesium.Math.toRadians(headingDeg || 0);
+		group.rotation.y = headingRad;
 
 		group.matrixAutoUpdate = false;
 		this.scene.add(group);
@@ -3625,11 +3665,6 @@ const airport = {
 		const viewMatrix = this.viewer.camera.viewMatrix;
 		const pos = Cesium.Cartesian3.fromDegrees(this.lon, this.lat, this.alt, undefined, new Cesium.Cartesian3());
 		const modelMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(pos, undefined, this._scratchMatrix);
-		// Rotate the ENU frame around its own up axis (Z) by the stored
-		// heading so the runway actually points the way it was spawned
-		// facing, instead of always sitting in raw east/north alignment.
-		const headingRotation = Cesium.Matrix3.fromRotationZ(-(this.headingRad || 0), this._scratchRotation3);
-		Cesium.Matrix4.multiplyByMatrix3(modelMatrix, headingRotation, modelMatrix);
 		const cameraSpaceMatrix = Cesium.Matrix4.multiply(viewMatrix, modelMatrix, this._scratchCameraMatrix);
 		for (let j = 0; j < 16; j++) this._scratchThreeMatrix.elements[j] = cameraSpaceMatrix[j];
 		this.group.matrix.copy(this._scratchThreeMatrix);
@@ -3643,6 +3678,97 @@ const airport = {
 		}
 	}
 };
+
+// ==================== fighterMesh.js (new - procedural fighter jet, replaces the external f-15.glb) ====================
+// Built at realistic meter dimensions (forward = -Z, up = +Y) so it works
+// unscaled for NPCs (placed via real-world ENU/HPR matrices) and scaled down
+// for the player (rendered in the small camera-space chase-cam trick).
+function buildFighterMesh(opts = {}) {
+	const color = opts.color || 0x8a9099;
+	const bodyMat = new THREE.MeshStandardMaterial({ color, metalness: 0.5, roughness: 0.45 });
+	const darkMat = new THREE.MeshStandardMaterial({ color: 0x2a2d31, metalness: 0.6, roughness: 0.35 });
+	const canopyMat = new THREE.MeshStandardMaterial({ color: 0x1b2733, metalness: 0.7, roughness: 0.15 });
+	const gearMat = new THREE.MeshStandardMaterial({ color: 0x151515, metalness: 0.3, roughness: 0.6 });
+
+	const group = new THREE.Group();
+
+	const fuselageGeom = new THREE.CylinderGeometry(1.0, 1.35, 13, 14);
+	fuselageGeom.rotateX(Math.PI / 2);
+	group.add(new THREE.Mesh(fuselageGeom, bodyMat));
+
+	const noseGeom = new THREE.ConeGeometry(1.0, 2.8, 14);
+	noseGeom.rotateX(-Math.PI / 2);
+	noseGeom.translate(0, 0, -7.9);
+	group.add(new THREE.Mesh(noseGeom, darkMat));
+
+	const canopyGeom = new THREE.SphereGeometry(0.9, 14, 10, 0, Math.PI * 2, 0, Math.PI / 2);
+	canopyGeom.scale(0.75, 0.9, 1.7);
+	canopyGeom.translate(0, 0.85, -2.9);
+	group.add(new THREE.Mesh(canopyGeom, canopyMat));
+
+	const wingShape = new THREE.Shape();
+	wingShape.moveTo(0, 0);
+	wingShape.lineTo(7.4, -3.6);
+	wingShape.lineTo(7.4, -4.4);
+	wingShape.lineTo(0.8, -1.2);
+	wingShape.lineTo(0, -1.2);
+	wingShape.lineTo(0, 0);
+	const wingGeom = new THREE.ExtrudeGeometry(wingShape, { depth: 0.16, bevelEnabled: false });
+	wingGeom.rotateX(Math.PI / 2);
+	wingGeom.translate(0, -0.15, 1.6);
+	const wingLeft = new THREE.Mesh(wingGeom, bodyMat);
+	group.add(wingLeft);
+	const wingRight = wingLeft.clone();
+	wingRight.scale.x = -1;
+	group.add(wingRight);
+
+	const finGeom = new THREE.BoxGeometry(0.16, 2.0, 2.0);
+	finGeom.translate(0, 1.2, 5.4);
+	group.add(new THREE.Mesh(finGeom, darkMat));
+
+	const stabGeom = new THREE.BoxGeometry(4.2, 0.14, 1.3);
+	stabGeom.translate(0, 0, 5.7);
+	group.add(new THREE.Mesh(stabGeom, bodyMat));
+
+	const nozzleGeom = new THREE.CylinderGeometry(0.65, 0.8, 1.6, 14);
+	nozzleGeom.rotateX(Math.PI / 2);
+	for (const side of [-0.65, 0.65]) {
+		const nozzle = new THREE.Mesh(nozzleGeom, darkMat);
+		nozzle.position.set(side * 0.75, -0.05, 6.7);
+		group.add(nozzle);
+	}
+
+	if (opts.withGear !== false) {
+		const strutGeom = new THREE.CylinderGeometry(0.09, 0.09, 1.7, 8);
+		const wheelGeom = new THREE.CylinderGeometry(0.42, 0.42, 0.3, 12);
+		wheelGeom.rotateZ(Math.PI / 2);
+
+		const makeGear = (x, z) => {
+			const g = new THREE.Group();
+			const strut = new THREE.Mesh(strutGeom, gearMat);
+			strut.position.y = -0.85;
+			g.add(strut);
+			const wheel = new THREE.Mesh(wheelGeom, gearMat);
+			wheel.position.y = -1.7;
+			g.add(wheel);
+			g.position.set(x, -0.6, z);
+			g.name = 'landingGear';
+			return g;
+		};
+		group.add(makeGear(0, -6.2));    // nose gear
+		group.add(makeGear(-1.7, 0.6));  // left main gear
+		group.add(makeGear(1.7, 0.6));   // right main gear
+	}
+
+	group.traverse((child) => {
+		if (child.isMesh) {
+			child.castShadow = true;
+			child.receiveShadow = true;
+		}
+	});
+
+	return group;
+}
 
 // ==================== groundTerrain.js (new - procedural land near the player) ====================
 // Only used when there's no real Cesium Ion terrain (HAS_ION_TOKEN is false),
@@ -3710,10 +3836,32 @@ const groundTerrain = {
 			const segments = 48;
 			const geom = new THREE.PlaneGeometry(this.size, this.size, segments, segments);
 			const posAttr = geom.attributes.position;
+
+			// Flatten terrain near the airport runway so hills don't poke
+			// through it - airport.lon/lat is only set once a runway exists.
+			let apLocalX = null, apLocalY = null;
+			if (typeof airport !== 'undefined' && airport.group) {
+				apLocalX = (airport.lon - centerLon) * 111320 * Math.cos(Cesium.Math.toRadians(centerLat));
+				apLocalY = (airport.lat - centerLat) * 111320;
+			}
+			const flattenInner = 950;
+			const flattenOuter = 2400;
+
 			for (let i = 0; i < posAttr.count; i++) {
 				const x = posAttr.getX(i);
 				const y = posAttr.getY(i);
-				const h = this._noise(x, y) * 85;
+				let h = this._noise(x, y) * 85;
+
+				if (apLocalX !== null) {
+					const dx = x - apLocalX;
+					const dy = y - apLocalY;
+					const distToAirport = Math.sqrt(dx * dx + dy * dy);
+					const t = Math.max(0, Math.min(1, (distToAirport - flattenInner) / (flattenOuter - flattenInner)));
+					// smoothstep easing
+					const falloff = t * t * (3 - 2 * t);
+					h *= falloff;
+				}
+
 				posAttr.setZ(i, h);
 			}
 			geom.computeVertexNormals();
@@ -3926,7 +4074,7 @@ class JetFlame {
 // ==================== planePhysics.js ====================
 class PlanePhysics {
 	constructor() {
-		this.speed = 70;
+		this.speed = 0;
 		this.maxSpeed = 550;
 		this.minSpeed = 70;
 		this.throttle = 0.5;
@@ -3997,13 +4145,20 @@ class PlanePhysics {
 		}
 
 		this.throttle = input.throttle;
-		let targetSpeed = this.minSpeed + (this.throttle * (this.maxSpeed - this.minSpeed));
+		let targetSpeed = this.throttle * this.maxSpeed;
 
 		if (this.isBoosting) {
 			targetSpeed = this.maxSpeed * this.boostMultiplier;
 		}
 
-		this.speed += (targetSpeed - this.speed) * dt * (this.isBoosting ? 4 : 2);
+		let speedLerpRate = this.isBoosting ? 4 : 2;
+		if (input.brake) {
+			targetSpeed = 0;
+			speedLerpRate = 5;
+		}
+
+		this.speed += (targetSpeed - this.speed) * dt * speedLerpRate;
+		if (this.speed < 0.05) this.speed = 0;
 
 		const controlEffectiveness = this.speed > this.minSpeed ? 1 : (this.speed / this.minSpeed);
 
@@ -5281,209 +5436,6 @@ class WeaponSystem {
 	}
 }
 
-// Procedural fighter jet, built entirely in-memory - no external model file
-// is ever requested. Used for both the player's plane and NPC fighters.
-function buildFighterMesh() {
-	const group = new THREE.Group();
-	const bodyMat = new THREE.MeshStandardMaterial({ color: 0x9aa1a8, metalness: 0.55, roughness: 0.38 });
-	const darkMat = new THREE.MeshStandardMaterial({ color: 0x2b2f34, metalness: 0.5, roughness: 0.5 });
-	const glassMat = new THREE.MeshStandardMaterial({ color: 0x141c26, metalness: 0.7, roughness: 0.15 });
-	const accentMat = new THREE.MeshStandardMaterial({ color: 0xa4231c, metalness: 0.15, roughness: 0.6 });
-	const nozzleMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1c, metalness: 0.8, roughness: 0.35 });
-
-	// ---- Fuselage: revolved profile (thin nose -> wide midsection -> tapered tail) ----
-	const profile = [
-		[0.04, -6.4], [0.22, -5.6], [0.42, -4.6], [0.58, -3.2],
-		[0.66, -1.4], [0.68, 0.4], [0.64, 1.8], [0.55, 3.0],
-		[0.42, 3.9], [0.28, 4.5], [0.10, 4.85]
-	].map(([r, y]) => new THREE.Vector2(r, y));
-	const fuselageGeom = new THREE.LatheGeometry(profile, 24);
-	fuselageGeom.rotateX(Math.PI / 2);
-	group.add(new THREE.Mesh(fuselageGeom, bodyMat));
-
-	// Radome (dark nose tip)
-	const radomeGeom = new THREE.ConeGeometry(0.15, 1.1, 16);
-	radomeGeom.rotateX(-Math.PI / 2);
-	radomeGeom.translate(0, 0, -6.7);
-	group.add(new THREE.Mesh(radomeGeom, darkMat));
-
-	// Cockpit canopy (raised bubble greenhouse, offset back from the radome)
-	const canopyGeom = new THREE.SphereGeometry(0.46, 14, 10, 0, Math.PI * 2, 0, Math.PI / 1.9);
-	canopyGeom.scale(1, 0.85, 2.1);
-	canopyGeom.translate(0, 0.48, -3.4);
-	group.add(new THREE.Mesh(canopyGeom, glassMat));
-	const canopyFrameGeom = new THREE.BoxGeometry(0.85, 0.08, 2.3);
-	canopyFrameGeom.translate(0, 0.32, -3.4);
-	group.add(new THREE.Mesh(canopyFrameGeom, darkMat));
-
-	// ---- Rectangular twin intakes (F-15 signature), slightly forward-canted ----
-	for (const side of [-1, 1]) {
-		const intakeGeom = new THREE.BoxGeometry(0.85, 0.62, 2.6);
-		const intake = new THREE.Mesh(intakeGeom, darkMat);
-		intake.position.set(side * 0.95, -0.32, -1.0);
-		intake.rotation.y = side * 0.05;
-		group.add(intake);
-
-		const lipGeom = new THREE.BoxGeometry(0.9, 0.66, 0.12);
-		const lip = new THREE.Mesh(lipGeom, bodyMat);
-		lip.position.set(side * 0.95, -0.32, -2.28);
-		group.add(lip);
-	}
-
-	// ---- Main wings: swept trapezoid with a clipped tip ----
-	function makeWingGeometry() {
-		const shape = new THREE.Shape();
-		shape.moveTo(0, 0);
-		shape.lineTo(3.15, -1.3);
-		shape.lineTo(3.0, -1.95);
-		shape.lineTo(2.15, -1.95);
-		shape.lineTo(0.2, -1.0);
-		shape.closePath();
-		const geom = new THREE.ExtrudeGeometry(shape, { depth: 0.14, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02, bevelSegments: 1 });
-		geom.translate(0, -0.06, 0.2);
-		geom.rotateZ(Math.PI / 2);
-		return geom;
-	}
-	const wingGeom = makeWingGeometry();
-	const wingL = new THREE.Mesh(wingGeom, bodyMat);
-	wingL.position.set(-0.55, -0.15, 0.7);
-	group.add(wingL);
-	const wingR = new THREE.Mesh(wingGeom.clone(), bodyMat);
-	wingR.scale.x = -1;
-	wingR.position.set(0.55, -0.15, 0.7);
-	group.add(wingR);
-
-	// Wingtip pylons + fuel tanks (visual detail, matches the game's weapon-pylon theme)
-	for (const side of [-1, 1]) {
-		const tankGeom = new THREE.CapsuleGeometry(0.13, 1.9, 4, 8);
-		tankGeom.rotateX(Math.PI / 2);
-		const tank = new THREE.Mesh(tankGeom, bodyMat);
-		tank.position.set(side * 3.55, -0.5, 0.55);
-		group.add(tank);
-	}
-
-	// ---- Twin tail booms + outward-canted vertical fins ----
-	for (const side of [-1, 1]) {
-		const boomGeom = new THREE.CylinderGeometry(0.22, 0.14, 3.4, 8);
-		boomGeom.rotateX(Math.PI / 2);
-		boomGeom.translate(0, 0, 3.4);
-		const boom = new THREE.Mesh(boomGeom, bodyMat);
-		boom.position.x = side * 0.75;
-		group.add(boom);
-
-		const finShape = new THREE.Shape();
-		finShape.moveTo(0, 0);
-		finShape.lineTo(0.15, 1.75);
-		finShape.lineTo(1.05, 1.65);
-		finShape.lineTo(1.5, 0.1);
-		finShape.closePath();
-		const finGeom = new THREE.ExtrudeGeometry(finShape, { depth: 0.1, bevelEnabled: false });
-		finGeom.translate(-0.5, 0, 2.9);
-		const fin = new THREE.Mesh(finGeom, accentMat);
-		fin.position.x = side * 0.75;
-		fin.rotation.y = Math.PI / 2;
-		fin.rotation.x = side * -0.1;
-		group.add(fin);
-	}
-
-	// Horizontal all-moving stabilizers
-	const stabShape = new THREE.Shape();
-	stabShape.moveTo(0, 0);
-	stabShape.lineTo(1.7, -0.7);
-	stabShape.lineTo(1.55, -1.15);
-	stabShape.lineTo(0.15, -0.6);
-	stabShape.closePath();
-	const stabGeom = new THREE.ExtrudeGeometry(stabShape, { depth: 0.1, bevelEnabled: false });
-	stabGeom.translate(0, -0.05, 3.55);
-	const stabL = new THREE.Mesh(stabGeom, bodyMat);
-	stabL.position.x = -0.3;
-	group.add(stabL);
-	const stabR = new THREE.Mesh(stabGeom.clone(), bodyMat);
-	stabR.scale.x = -1;
-	stabR.position.x = 0.3;
-	group.add(stabR);
-
-	// Twin convergent engine nozzles
-	for (const side of [-1, 1]) {
-		const nozzleGeom = new THREE.CylinderGeometry(0.42, 0.32, 1.2, 12);
-		nozzleGeom.rotateX(Math.PI / 2);
-		nozzleGeom.translate(0, 0, 5.1);
-		const nozzle = new THREE.Mesh(nozzleGeom, nozzleMat);
-		nozzle.position.x = side * 0.75;
-		group.add(nozzle);
-
-		const innerGeom = new THREE.CylinderGeometry(0.22, 0.22, 0.3, 10);
-		innerGeom.rotateX(Math.PI / 2);
-		innerGeom.translate(0, 0, 5.72);
-		const inner = new THREE.Mesh(innerGeom, darkMat);
-		inner.position.x = side * 0.75;
-		group.add(inner);
-	}
-
-	// ---- Landing gear: strut + wheel for nose and both mains, so the jet
-	// doesn't look like it's belly-flopped on the ground when parked/taxiing ----
-	const gearGroup = new THREE.Group();
-	const strutMat = new THREE.MeshStandardMaterial({ color: 0xb8bcc2, metalness: 0.7, roughness: 0.3 });
-	const tireMat = new THREE.MeshStandardMaterial({ color: 0x161616, metalness: 0.1, roughness: 0.8 });
-	function makeGearLeg(strutLen, wheelRadius) {
-		const legGroup = new THREE.Group();
-		const strutGeom = new THREE.CylinderGeometry(0.045, 0.06, strutLen, 8);
-		const strut = new THREE.Mesh(strutGeom, strutMat);
-		strut.position.y = -strutLen / 2;
-		legGroup.add(strut);
-		const wheelGeom = new THREE.CylinderGeometry(wheelRadius, wheelRadius, wheelRadius * 0.7, 14);
-		wheelGeom.rotateX(Math.PI / 2);
-		const wheel = new THREE.Mesh(wheelGeom, tireMat);
-		wheel.position.y = -strutLen;
-		legGroup.add(wheel);
-		return legGroup;
-	}
-	const noseGear = makeGearLeg(1.15, 0.28);
-	noseGear.position.set(0, -0.55, -4.3);
-	gearGroup.add(noseGear);
-	for (const side of [-1, 1]) {
-		const mainGear = makeGearLeg(1.35, 0.34);
-		mainGear.position.set(side * 1.05, -0.55, 0.3);
-		gearGroup.add(mainGear);
-	}
-	gearGroup.name = 'landingGear';
-	group.add(gearGroup);
-
-	// ---- Navigation & beacon lights (small emissive markers - port red,
-	// starboard green, white anti-collision beacon on the spine) ----
-	const redLightMat = new THREE.MeshBasicMaterial({ color: 0xff2222 });
-	const greenLightMat = new THREE.MeshBasicMaterial({ color: 0x22ff44 });
-	const whiteLightMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-	const navLightGeom = new THREE.SphereGeometry(0.05, 8, 6);
-	const navL = new THREE.Mesh(navLightGeom, redLightMat);
-	navL.position.set(-3.5, -0.1, 1.05);
-	group.add(navL);
-	const navR = new THREE.Mesh(navLightGeom.clone(), greenLightMat);
-	navR.position.set(3.5, -0.1, 1.05);
-	group.add(navR);
-	const beacon = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 6), whiteLightMat);
-	beacon.position.set(0, 0.7, 2.9);
-	group.add(beacon);
-
-	group.traverse((child) => {
-		if (child.isMesh) {
-			child.castShadow = true;
-			child.receiveShadow = true;
-		}
-	});
-
-	// The profile above is modeled at roughly 1/1.75 scale for easier
-	// authoring; scale the whole assembly up to match a real F-15's
-	// actual ~19m length. This matters: the runway, buildings, and world
-	// are all built in true meters, so an undersized model here would
-	// look like a thin stick and make its speed across the runway look
-	// wrong relative to the (correctly real-world-scaled) environment.
-	group.scale.setScalar(1.75);
-	group.userData.landingGear = gearGroup;
-
-	return group;
-}
-
 // ==================== npcSystem.js ====================
 class NPCSystem {
 	constructor(viewer, scene) {
@@ -5492,9 +5444,9 @@ class NPCSystem {
 		this.npcs = [];
 		this.npcNames = ['PHOENIX', 'MARVEL', 'VIPER', 'GHOST', 'RAVEN', 'EAGLE', 'FALCON', 'BLADE', 'STRIKER', 'STORM', 'KNIGHT', 'TITAN'];
 		this.lastSpawnTime = 0;
-		this.modelTemplate = null;
+		this.modelTemplate = buildFighterMesh({ color: 0x707070 });
 		this.animations = [];
-		this.loaded = false;
+		this.loaded = true;
 
 		this.commercialModel = this._buildCommercialMesh();
 
@@ -5503,8 +5455,6 @@ class NPCSystem {
 		this._scratchCartesian = new Cesium.Cartesian3();
 		this._scratchThreeMatrix = new THREE.Matrix4();
 		this._scratchCameraMatrix = new Cesium.Matrix4();
-
-		this.loadModel();
 	}
 
 	_buildCommercialMesh() {
@@ -5559,14 +5509,6 @@ class NPCSystem {
 		});
 
 		return group;
-	}
-
-	loadModel() {
-		// Fully procedural - built in-memory, no external model file is ever
-		// requested. Keeps everything self-contained in this one HTML file.
-		this.modelTemplate = buildFighterMesh();
-		this.animations = [];
-		this.loaded = true;
 	}
 
 	spawnNPC(playerLon, playerLat, playerAlt) {
@@ -5975,6 +5917,7 @@ class PlaneController {
 			roll: 0,
 			yaw: 0,
 			boost: false,
+			brake: false,
 			cameraYaw: 0,
 			cameraPitch: 0,
 			isDragging: false,
@@ -5994,6 +5937,7 @@ class PlaneController {
 		this.touchYawLeft = false;
 		this.touchYawRight = false;
 		this.touchBoost = false;
+		this.touchBrake = false;
 		this.touchFire = false;
 		this.touchFlare = false;
 		this.touchWeaponToggle = false;
@@ -6134,6 +6078,7 @@ class PlaneController {
 		bindHold('touch-yaw-right', (v) => { this.touchYawRight = v; });
 		bindHold('touch-btn-fire', (v) => { this.touchFire = v; });
 		bindHold('touch-btn-boost', (v) => { this.touchBoost = v; });
+		bindHold('touch-btn-brake', (v) => { this.touchBrake = v; });
 		bindHold('touch-btn-flare', (v) => { this.touchFlare = v; });
 
 		// --- One-shot: weapon switch ---
@@ -6175,6 +6120,7 @@ class PlaneController {
 
 	update() {
 		this.input.boost = !!this.keys[' '];
+		this.input.brake = !!this.keys['b'] || this.touchBrake;
 		this.input.isDragging = this.mouseDragging;
 		
 		this.input.fire = !!this.keys['enter'] || !!this.keys['f'];
@@ -6296,13 +6242,26 @@ function initCesium() {
 		// leave _baseImagery undefined so Cesium uses its normal Ion-based default (e.g. Bing aerial)
 	} else {
 		console.log('[Web Flight Simulator] No Cesium Ion token set - using flat terrain + free OpenStreetMap imagery instead of world elevation/satellite data. Add your own token (see top of script) for the real thing.');
+		// Explicitly neutralize the token so nothing can silently fall through
+		// to Cesium's own Ion-based default imagery/terrain and hit a 401.
+		try { Cesium.Ion.defaultAccessToken = ''; } catch (e) { }
 		try {
-			_baseImagery = new Cesium.OpenStreetMapImageryProvider({
-				url: 'https://tile.openstreetmap.org/'
+			// UrlTemplateImageryProvider is a foundational, very stable class -
+			// safer than relying on the OpenStreetMapImageryProvider wrapper,
+			// whose constructor API has changed across Cesium versions.
+			_baseImagery = new Cesium.UrlTemplateImageryProvider({
+				url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+				credit: 'Map data (c) OpenStreetMap contributors',
+				maximumLevel: 19
 			});
 		} catch (e) {
-			console.warn('[Web Flight Simulator] Could not initialize OpenStreetMap fallback imagery.', e);
-			_baseImagery = undefined;
+			console.warn('[Web Flight Simulator] Could not initialize OpenStreetMap fallback imagery - using an offline grid instead.', e);
+			try {
+				_baseImagery = new Cesium.GridImageryProvider();
+			} catch (e2) {
+				console.warn('[Web Flight Simulator] Could not initialize even the offline grid imagery fallback.', e2);
+				_baseImagery = undefined;
+			}
 		}
 	}
 
@@ -6324,7 +6283,6 @@ function initCesium() {
 
 	_cwMiniViewer = new Cesium.Viewer("minimapCesium", {
 		terrain: null,
-		imageryProvider: _baseImagery,
 		timeline: false,
 		animation: false,
 		baseLayerPicker: false,
@@ -6347,7 +6305,6 @@ function initCesium() {
 
 	_cwPauseMiniViewer = new Cesium.Viewer("pauseMinimapCesium", {
 		terrain: null,
-		imageryProvider: _baseImagery,
 		timeline: false,
 		animation: false,
 		baseLayerPicker: false,
@@ -6380,10 +6337,7 @@ function initCesium() {
 		v.scene.screenSpaceCameraController.enableTilt = false;
 		v.scene.screenSpaceCameraController.enableLook = false;
 
-		v.scene.screenSpaceCameraController.maximumZoomDistance = 6000000;
-		v.scene.screenSpaceCameraController.zoomFactor = 3.0;
-		v.scene.screenSpaceCameraController.inertiaTranslate = 0.92;
-		v.scene.screenSpaceCameraController.inertiaZoom = 0.88;
+		v.scene.screenSpaceCameraController.maximumZoomDistance = 25000000;
 
 		v.scene.globe.tileCacheSize = 2048;
 		v.scene.globe.preloadAncestors = true;
@@ -7827,7 +7781,6 @@ const spawnInstruction = document.getElementById('spawnInstruction');
 const confirmSpawnBtn = document.getElementById('confirmSpawnBtn');
 
 let spawnMarker = null;
-let currentAirportName = null;
 
 const startBtn = document.getElementById('startBtn');
 
@@ -8055,64 +8008,45 @@ function initThree() {
 
 	initSounds().catch(err => console.error('Failed to init sounds', err));
 
-	function setupPlaneModel(mesh, animations) {
-		planeModel = new THREE.Group();
-		planeModel.add(mesh);
-		planeModel.userData.bodyMesh = mesh;
-		scene.add(planeModel);
+	const mesh = buildFighterMesh({ color: 0x8a9099 });
 
-		planeModel.layers.set(1);
-		planeModel.traverse(child => {
-			child.layers.set(1);
-		});
+	planeModel = new THREE.Group();
+	planeModel.add(mesh);
+	scene.add(planeModel);
 
-		const box = new THREE.Box3().setFromObject(mesh);
-		const center = box.getCenter(new THREE.Vector3());
-		mesh.position.sub(center);
+	planeModel.layers.set(1);
+	planeModel.traverse(child => {
+		child.layers.set(1);
+	});
 
-		planeModel.position.copy(BASE_PLANE_POS);
-		planeModel.scale.set(1, 1, 1);
+	planeModel.position.copy(BASE_PLANE_POS);
+	planeModel.scale.set(0.2, 0.2, 0.2);
 
-		const flameL = new JetFlame();
-		const flameR = new JetFlame();
+	const flameL = new JetFlame();
+	const flameR = new JetFlame();
 
-		flameL.group.position.set(-0.4, -0.065, 5);
-		flameR.group.position.set(0.4, -0.065, 5);
+	flameL.group.position.set(-0.65, -0.05, 6.7);
+	flameR.group.position.set(0.65, -0.05, 6.7);
 
+	planeModel.add(flameL.group);
+	planeModel.add(flameR.group);
+	jetFlames.push(flameL, flameR);
 
-		planeModel.add(flameL.group);
-		planeModel.add(flameR.group);
-		jetFlames.push(flameL, flameR);
-
-		weaponSystem = new WeaponSystem(getViewer(), scene, planeModel);
-		weaponSystem.onKill = (npc) => {
-			state.score += 1000;
-			try { soundManager.play('glitch-random'); } catch (e) { }
-			if (hud) {
-				hud.showKillNotification(npc.name, 1000);
-			}
-		};
-
-		planeModel.traverse(child => {
-			child.layers.set(1);
-		});
-
-		mixer = new THREE.AnimationMixer(mesh);
-		const clip = THREE.AnimationClip.findByName(animations, 'flight_mode');
-		if (clip) {
-			const action = mixer.clipAction(clip);
-			action.setLoop(THREE.LoopOnce);
-			action.clampWhenFinished = true;
-			action.play();
+	weaponSystem = new WeaponSystem(getViewer(), scene, planeModel);
+	weaponSystem.onKill = (npc) => {
+		state.score += 1000;
+		try { soundManager.play('glitch-random'); } catch (e) { }
+		if (hud) {
+			hud.showKillNotification(npc.name, 1000);
 		}
+	};
 
-		loadingStatus.model = true;
-		updateLoadingUI();
-	}
+	planeModel.traverse(child => {
+		child.layers.set(1);
+	});
 
-	// Fully procedural - built in-memory in this file, no external model
-	// file is ever requested.
-	setupPlaneModel(buildFighterMesh(), []);
+	loadingStatus.model = true;
+	updateLoadingUI();
 }
 
 function update(dt) {
@@ -8169,7 +8103,6 @@ function update(dt) {
 	}
 
 	checkCrash();
-	if (isGrounded) applyGroundRoll(dt, input);
 	checkGPWS();
 
 	if (soundManager.isPlaying('jet-engine')) {
@@ -8247,14 +8180,6 @@ function update(dt) {
 		const accelInertia = input.isDragging ? 0 : Math.max(-0.5, Math.min(1.5, accel * 0.001));
 		const viewOffset = getActiveViewOffset();
 		if (planeModel) planeModel.visible = (CAMERA_VIEWS[cameraViewIndex] !== 'cockpit');
-
-		const bodyMesh = planeModel.userData.bodyMesh;
-		const gear = bodyMesh && bodyMesh.userData && bodyMesh.userData.landingGear;
-		if (gear) {
-			// Down for takeoff/landing/taxi, retracted once well clear of the
-			// ground - matches how a real jet's gear cycle looks.
-			gear.visible = isGrounded || (state.alt - lastSampledTerrainHeight) < 150;
-		}
 		let targetZ = viewOffset.z - accelInertia;
 
 		let boostZOffset = 0;
@@ -8398,72 +8323,12 @@ function checkGPWS() {
 
 let lastCrashCheck = 0;
 let flightStartTime = 0;
-// True once the plane has safely touched down and is rolling on its
-// wheels, rather than mid-air. Cleared again on takeoff or on a fresh spawn.
-let isGrounded = false;
-let prevAltForVSpeed = null;
-let lastSampledTerrainHeight = 0;
-
-// How high the wheels sit above the sampled terrain/runway height when the
-// plane is considered "on the ground" (roughly matches the gear length used
-// at spawn time).
-const GEAR_CLEARANCE = 2.5;
-
-function triggerCrash() {
-	currentState = States.CRASHED;
-	if (dialogueSystem) dialogueSystem.stop();
-	uiContainer.classList.add('hidden');
-	const weaponsHud = document.getElementById('weapons-hud');
-	if (weaponsHud) weaponsHud.classList.add('hidden');
-	threeContainer.classList.add('hidden');
-	crashMenu.classList.remove('hidden');
-	hud.update(state, []);
-
-	stopAllFlyingSounds(0.1);
-	setTimeout(() => {
-		soundManager.play('explode');
-		soundManager.play('ambient-crash');
-	}, 50);
-}
-
-// Ground rollout: once safely landed, decelerate on the wheels via rolling
-// friction, level the wings/nose out, and hand control back to normal flight
-// physics once the plane has enough speed again to rotate for takeoff. Runs
-// every frame (not throttled) so the plane doesn't jitter while taxiing.
-function applyGroundRoll(dt, input) {
-	const rollingDrag = 12; // m/s^2 - similar to light braking/rolling resistance
-	physics.speed = Math.max(0, physics.speed - rollingDrag * dt);
-	state.speed = physics.speed;
-
-	const rotateSpeed = physics.minSpeed * 1.05;
-	if (state.speed >= rotateSpeed) {
-		// Enough runway speed - hand back to normal flight physics so the
-		// player can rotate and climb out.
-		isGrounded = false;
-		return;
-	}
-
-	// Below rotation speed: keep the plane level and glued to the runway
-	// instead of letting stray pitch/roll input flip it over while taxiing.
-	const levelRate = Math.max(0, 1 - dt * 3.0);
-	state.roll *= levelRate;
-	state.pitch *= levelRate;
-	physics.roll = state.roll;
-	physics.pitch = state.pitch;
-	physics.quaternion.setFromEuler(new THREE.Euler(
-		THREE.MathUtils.degToRad(state.pitch),
-		THREE.MathUtils.degToRad(state.heading),
-		THREE.MathUtils.degToRad(state.roll),
-		'YXZ'
-	));
-}
 
 function checkCrash() {
 	if (currentState !== States.FLYING) return;
 
 	const now = Date.now();
 	if (now - lastCrashCheck < 100) return;
-	const dtCheck = (now - lastCrashCheck) / 1000;
 	lastCrashCheck = now;
 
 	if (now - flightStartTime < 3000) return;
@@ -8473,45 +8338,23 @@ function checkCrash() {
 
 	const cartographic = Cesium.Cartographic.fromDegrees(state.lon, state.lat);
 	const terrainHeight = viewer.scene.globe.getHeight(cartographic);
-	if (terrainHeight === undefined) return;
-	lastSampledTerrainHeight = terrainHeight;
 
-	const groundLevel = terrainHeight + GEAR_CLEARANCE;
+	if (terrainHeight !== undefined && state.alt <= terrainHeight + 5) {
+		currentState = States.CRASHED;
+		if (dialogueSystem) dialogueSystem.stop();
+		uiContainer.classList.add('hidden');
+		const weaponsHud = document.getElementById('weapons-hud');
+		if (weaponsHud) weaponsHud.classList.add('hidden');
+		threeContainer.classList.add('hidden');
+		crashMenu.classList.remove('hidden');
+		hud.update(state, []);
 
-	const sinkRate = (prevAltForVSpeed !== null && dtCheck > 0)
-		? Math.max(0, (prevAltForVSpeed - state.alt) / dtCheck)
-		: 0;
-	prevAltForVSpeed = state.alt;
-
-	if (state.alt > groundLevel + 1.0) {
-		// Clearly airborne - clear the grounded flag if we just took off.
-		isGrounded = false;
-		return;
+		stopAllFlyingSounds(0.1);
+		setTimeout(() => {
+			soundManager.play('explode');
+			soundManager.play('ambient-crash');
+		}, 50);
 	}
-
-	if (!isGrounded) {
-		// First ground contact - this is the moment that decides whether
-		// it's a landing or a crash. Real landings tolerate some sink rate,
-		// a level-ish attitude and a sane approach speed; anything beyond
-		// that is a hard impact.
-		const hardSink = sinkRate > 8.0;                          // >~1575 ft/min - a real hard impact
-		const badBank = Math.abs(state.roll) > 20;                // wing strike risk
-		const badPitch = state.pitch < -12 || state.pitch > 18;   // nose-in or tail strike
-		const wayTooFast = state.speed > physics.maxSpeed * 0.85; // far past a safe landing speed
-
-		if (hardSink || badBank || badPitch || wayTooFast) {
-			triggerCrash();
-			return;
-		}
-
-		// Safe touchdown.
-		isGrounded = true;
-	}
-
-	// Grounded: keep the plane sitting on the ground rather than clipping
-	// through it. Speed/attitude handling while rolling happens in
-	// applyGroundRoll(), called every frame from update().
-	state.alt = groundLevel;
 }
 
 function animate() {
@@ -8610,6 +8453,16 @@ function setupModalListeners() {
 	document.getElementById('pauseHelpBtn').onclick = () => {
 		closeAllModals();
 		document.getElementById('helpModal').classList.remove('hidden');
+	};
+
+	document.getElementById('creditsBtn').onclick = () => {
+		closeAllModals();
+		document.getElementById('creditsModal').classList.remove('hidden');
+	};
+
+	document.getElementById('aboutBtn').onclick = () => {
+		closeAllModals();
+		document.getElementById('aboutBtnModal').classList.remove('hidden');
 	};
 
 
@@ -8965,74 +8818,7 @@ function setupLocationSearch() {
 	});
 }
 
-// Looks up the nearest real-world airport to a picked point using the free
-// OpenStreetMap Overpass API (no key required). Returns null (rather than
-// throwing) on any failure/timeout/no-result, so callers can always fall
-// back to spawning at the originally picked point.
-async function findNearestAirport(lon, lat, radiusMeters = 60000) {
-	const query = `[out:json][timeout:8];(node["aeroway"="aerodrome"](around:${radiusMeters},${lat},${lon});way["aeroway"="aerodrome"](around:${radiusMeters},${lat},${lon}););out center 15;`;
-	const url = 'https://overpass-api.de/api/interpreter?data=' + encodeURIComponent(query);
-
-	const abortController = new AbortController();
-	const timeoutId = setTimeout(() => abortController.abort(), 7000);
-
-	try {
-		const response = await fetch(url, { signal: abortController.signal });
-		if (!response.ok) return null;
-		const data = await response.json();
-		if (!data.elements || data.elements.length === 0) return null;
-
-		function haversineMeters(lat1, lon1, lat2, lon2) {
-			const R = 6371000;
-			const dLat = (lat2 - lat1) * Math.PI / 180;
-			const dLon = (lon2 - lon1) * Math.PI / 180;
-			const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
-			return 2 * R * Math.asin(Math.sqrt(a));
-		}
-
-		let best = null;
-		let bestDist = Infinity;
-		for (const el of data.elements) {
-			const elLat = el.lat !== undefined ? el.lat : (el.center && el.center.lat);
-			const elLon = el.lon !== undefined ? el.lon : (el.center && el.center.lon);
-			if (elLat === undefined || elLon === undefined) continue;
-			const dist = haversineMeters(lat, lon, elLat, elLon);
-			if (dist < bestDist) {
-				bestDist = dist;
-				best = {
-					lon: elLon,
-					lat: elLat,
-					name: (el.tags && (el.tags.name || el.tags['name:en'])) || null,
-					distance: dist
-				};
-			}
-		}
-		return best;
-	} catch (e) {
-		console.warn('[Web Flight Simulator] Nearest-airport lookup failed - spawning at the picked location instead.', e);
-		return null;
-	} finally {
-		clearTimeout(timeoutId);
-	}
-}
-
-document.getElementById('confirmSpawnBtn').onclick = async () => {
-	const originalBtnText = confirmSpawnBtn.textContent;
-	confirmSpawnBtn.disabled = true;
-	confirmSpawnBtn.textContent = 'FINDING NEAREST AIRPORT...';
-
-	const nearest = await findNearestAirport(state.lon, state.lat);
-	if (nearest) {
-		state.lon = nearest.lon;
-		state.lat = nearest.lat;
-		currentAirportName = nearest.name;
-	} else {
-		currentAirportName = null;
-	}
-
-	confirmSpawnBtn.disabled = false;
-	confirmSpawnBtn.textContent = originalBtnText;
-
+document.getElementById('confirmSpawnBtn').onclick = () => {
 	const vignette = document.getElementById('transition-vignette');
 	if (vignette) vignette.style.opacity = '1';
 
@@ -9047,7 +8833,7 @@ document.getElementById('confirmSpawnBtn').onclick = async () => {
 
 		setControlsEnabled(false);
 
-		state.speed = 100;
+		state.speed = 0;
 		state.pitch = 0;
 		state.roll = 0;
 
@@ -9069,54 +8855,20 @@ document.getElementById('confirmSpawnBtn').onclick = async () => {
 		try {
 			let groundAlt = 0;
 			if (viewer && viewer.scene && viewer.scene.globe) {
-				// Real-world terrain is rarely perfectly flat, but the runway
-				// is a single flat plane. Sample several points across its
-				// footprint (center, both ends, both sides) and use the
-				// highest one (plus a small margin) so the runway always
-				// sits at or above the real ground everywhere under it,
-				// rather than clipping into a slope and disappearing.
-				const headingRad = Cesium.Math.toRadians(state.heading || 0);
-				const offsets = [
-					{ d: 0, s: 0 }, { d: 750, s: 0 }, { d: -750, s: 0 },
-					{ d: 0, s: 25 }, { d: 0, s: -25 }
-				];
-				const cosLat = Math.cos(Cesium.Math.toRadians(state.lat));
-				const samplePoints = offsets.map(({ d, s }) => {
-					const dx = Math.sin(headingRad) * d + Math.cos(headingRad) * s;
-					const dz = Math.cos(headingRad) * d - Math.sin(headingRad) * s;
-					const lonOffset = dx / (111320 * cosLat);
-					const latOffset = dz / 111320;
-					return Cesium.Cartographic.fromDegrees(state.lon + lonOffset, state.lat + latOffset);
-				});
-				let maxH = -Infinity;
-				let anyValid = false;
-				for (const cp of samplePoints) {
-					const h = viewer.scene.globe.getHeight(cp);
-					if (typeof h === 'number' && !isNaN(h)) {
-						anyValid = true;
-						if (h > maxH) maxH = h;
-					}
-				}
-				if (anyValid) groundAlt = maxH + 1.5;
+				const h = viewer.scene.globe.getHeight(Cesium.Cartographic.fromDegrees(state.lon, state.lat));
+				if (typeof h === 'number' && !isNaN(h)) groundAlt = h;
 			}
-			// If we spawned at a real-world airport AND real Cesium
-			// imagery/terrain is active, let the real imagery show the
-			// runway instead of overlaying our own generic strip on top of
-			// it (which would be a different shape/heading and look like a
-			// second, misaligned airport). Only draw our procedural runway
-			// when there's no real airport data to conflict with.
-			const useRealAirportImagery = HAS_ION_TOKEN && !!currentAirportName;
-			airport.spawnAt(state.lon, state.lat, groundAlt, state.heading, useRealAirportImagery);
+			airport.spawnAt(state.lon, state.lat, groundAlt, state.heading);
 			// Spawn ON the runway (ground level + small gear clearance),
 			// not high up in the sky.
 			state.alt = groundAlt + 3;
-			state.speed = 60;
+			state.speed = 0;
 
 			// A handful of nearby airport markers for the minimap. Only the
 			// spawn airport actually has 3D runway geometry in the world -
 			// the rest are minimap-only markers (keeps this lightweight).
 			const airportNames = ['NORTH FIELD', 'EASTPOINT', 'SOUTH RIDGE', 'WESTGATE', 'HARBOR INTL'];
-			nearbyAirports = [{ lon: state.lon, lat: state.lat, name: currentAirportName || 'DEPARTURE' }];
+			nearbyAirports = [{ lon: state.lon, lat: state.lat, name: 'DEPARTURE' }];
 			for (let i = 0; i < airportNames.length; i++) {
 				const angle = Math.random() * Math.PI * 2;
 				const dist = 15000 + Math.random() * 55000;
@@ -9126,7 +8878,7 @@ document.getElementById('confirmSpawnBtn').onclick = async () => {
 			}
 		} catch (e) {
 			state.alt = 3;
-			state.speed = 60;
+			state.speed = 0;
 		}
 
 		visualOffset.copy(BASE_PLANE_POS);
@@ -9171,8 +8923,6 @@ document.getElementById('confirmSpawnBtn').onclick = async () => {
 			easingFunction: Cesium.EasingFunction.QUADRATIC_IN_OUT,
 			complete: () => {
 				flightStartTime = Date.now();
-				isGrounded = false;
-				prevAltForVSpeed = null;
 				uiContainer.classList.remove('hidden');
 				const weaponsHud = document.getElementById('weapons-hud');
 				if (weaponsHud) weaponsHud.classList.remove('hidden');
@@ -9282,32 +9032,16 @@ const unregisterGlobeTracker = viewer.scene.postRender.addEventListener(() => {
 	}
 });
 
-let terrainLoadingHideTimer = null;
 viewer.scene.globe.tileLoadProgressEvent.addEventListener((queueLength) => {
 	if (loadingIndicator && loadingText) {
 		if (currentState === States.PICK_SPAWN) {
 			if (queueLength > 0) {
-				if (terrainLoadingHideTimer) {
-					clearTimeout(terrainLoadingHideTimer);
-					terrainLoadingHideTimer = null;
-				}
 				loadingText.textContent = "Loading Terrain...";
 				loadingIndicator.classList.remove('hidden');
-			} else if (!terrainLoadingHideTimer) {
-				// Don't hide immediately - the tile queue briefly drops to 0
-				// between batches while panning, which would otherwise cause
-				// the indicator to flicker on/off rapidly. Wait a beat to see
-				// if more tiles start loading before hiding it.
-				terrainLoadingHideTimer = setTimeout(() => {
-					loadingIndicator.classList.add('hidden');
-					terrainLoadingHideTimer = null;
-				}, 650);
+			} else {
+				loadingIndicator.classList.add('hidden');
 			}
 		} else {
-			if (terrainLoadingHideTimer) {
-				clearTimeout(terrainLoadingHideTimer);
-				terrainLoadingHideTimer = null;
-			}
 			const isAllLoaded = loadingStatus.audio && loadingStatus.model && loadingStatus.cesium && loadingStatus.globe;
 			if (isAllLoaded) {
 				loadingIndicator.classList.add('hidden');
