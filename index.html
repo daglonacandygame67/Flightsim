@@ -6307,7 +6307,10 @@ function initCesium() {
 		v.scene.screenSpaceCameraController.enableTilt = false;
 		v.scene.screenSpaceCameraController.enableLook = false;
 
-		v.scene.screenSpaceCameraController.maximumZoomDistance = 25000000;
+		v.scene.screenSpaceCameraController.maximumZoomDistance = 6000000;
+		v.scene.screenSpaceCameraController.zoomFactor = 3.0;
+		v.scene.screenSpaceCameraController.inertiaTranslate = 0.92;
+		v.scene.screenSpaceCameraController.inertiaZoom = 0.88;
 
 		v.scene.globe.tileCacheSize = 2048;
 		v.scene.globe.preloadAncestors = true;
@@ -7751,6 +7754,7 @@ const spawnInstruction = document.getElementById('spawnInstruction');
 const confirmSpawnBtn = document.getElementById('confirmSpawnBtn');
 
 let spawnMarker = null;
+let currentAirportName = null;
 
 const startBtn = document.getElementById('startBtn');
 
@@ -8811,7 +8815,74 @@ function setupLocationSearch() {
 	});
 }
 
-document.getElementById('confirmSpawnBtn').onclick = () => {
+// Looks up the nearest real-world airport to a picked point using the free
+// OpenStreetMap Overpass API (no key required). Returns null (rather than
+// throwing) on any failure/timeout/no-result, so callers can always fall
+// back to spawning at the originally picked point.
+async function findNearestAirport(lon, lat, radiusMeters = 60000) {
+	const query = `[out:json][timeout:8];(node["aeroway"="aerodrome"](around:${radiusMeters},${lat},${lon});way["aeroway"="aerodrome"](around:${radiusMeters},${lat},${lon}););out center 15;`;
+	const url = 'https://overpass-api.de/api/interpreter?data=' + encodeURIComponent(query);
+
+	const abortController = new AbortController();
+	const timeoutId = setTimeout(() => abortController.abort(), 7000);
+
+	try {
+		const response = await fetch(url, { signal: abortController.signal });
+		if (!response.ok) return null;
+		const data = await response.json();
+		if (!data.elements || data.elements.length === 0) return null;
+
+		function haversineMeters(lat1, lon1, lat2, lon2) {
+			const R = 6371000;
+			const dLat = (lat2 - lat1) * Math.PI / 180;
+			const dLon = (lon2 - lon1) * Math.PI / 180;
+			const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+			return 2 * R * Math.asin(Math.sqrt(a));
+		}
+
+		let best = null;
+		let bestDist = Infinity;
+		for (const el of data.elements) {
+			const elLat = el.lat !== undefined ? el.lat : (el.center && el.center.lat);
+			const elLon = el.lon !== undefined ? el.lon : (el.center && el.center.lon);
+			if (elLat === undefined || elLon === undefined) continue;
+			const dist = haversineMeters(lat, lon, elLat, elLon);
+			if (dist < bestDist) {
+				bestDist = dist;
+				best = {
+					lon: elLon,
+					lat: elLat,
+					name: (el.tags && (el.tags.name || el.tags['name:en'])) || null,
+					distance: dist
+				};
+			}
+		}
+		return best;
+	} catch (e) {
+		console.warn('[Web Flight Simulator] Nearest-airport lookup failed - spawning at the picked location instead.', e);
+		return null;
+	} finally {
+		clearTimeout(timeoutId);
+	}
+}
+
+document.getElementById('confirmSpawnBtn').onclick = async () => {
+	const originalBtnText = confirmSpawnBtn.textContent;
+	confirmSpawnBtn.disabled = true;
+	confirmSpawnBtn.textContent = 'FINDING NEAREST AIRPORT...';
+
+	const nearest = await findNearestAirport(state.lon, state.lat);
+	if (nearest) {
+		state.lon = nearest.lon;
+		state.lat = nearest.lat;
+		currentAirportName = nearest.name;
+	} else {
+		currentAirportName = null;
+	}
+
+	confirmSpawnBtn.disabled = false;
+	confirmSpawnBtn.textContent = originalBtnText;
+
 	const vignette = document.getElementById('transition-vignette');
 	if (vignette) vignette.style.opacity = '1';
 
@@ -8861,7 +8932,7 @@ document.getElementById('confirmSpawnBtn').onclick = () => {
 			// spawn airport actually has 3D runway geometry in the world -
 			// the rest are minimap-only markers (keeps this lightweight).
 			const airportNames = ['NORTH FIELD', 'EASTPOINT', 'SOUTH RIDGE', 'WESTGATE', 'HARBOR INTL'];
-			nearbyAirports = [{ lon: state.lon, lat: state.lat, name: 'DEPARTURE' }];
+			nearbyAirports = [{ lon: state.lon, lat: state.lat, name: currentAirportName || 'DEPARTURE' }];
 			for (let i = 0; i < airportNames.length; i++) {
 				const angle = Math.random() * Math.PI * 2;
 				const dist = 15000 + Math.random() * 55000;
@@ -9044,7 +9115,7 @@ viewer.scene.globe.tileLoadProgressEvent.addEventListener((queueLength) => {
 				terrainLoadingHideTimer = setTimeout(() => {
 					loadingIndicator.classList.add('hidden');
 					terrainLoadingHideTimer = null;
-				}, 400);
+				}, 650);
 			}
 		} else {
 			if (terrainLoadingHideTimer) {
